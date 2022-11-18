@@ -1,0 +1,21 @@
+.container {
+    margin: 0 auto;
+}
+
+body main form {
+    display: flex;
+    height: 50px;
+}
+
+body main form > * {
+    margin-right: 10px;
+}
+
+body main form select.form-select {
+    width: 200px;
+}
+
+body main form button {
+    white-space: nowrap;
+    margin-right: 0;
+}
