@@ -26,7 +26,7 @@ class ArticleControllerTest {
     public void test01() throws Exception {
         mockMvc.perform(get("/articles"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.TEXT_HTML))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(model().attributeExists("articles"));
                 // model 에 articles 라는 속성이 있는지?
     }
@@ -36,7 +36,7 @@ class ArticleControllerTest {
     public void test02() throws Exception {
         mockMvc.perform(get("/articles/1"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.TEXT_HTML))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(model().attributeExists("articles"));
                 // model 에 articles 라는 속성이 있는지?
     }
@@ -46,7 +46,7 @@ class ArticleControllerTest {
     public void test03() throws Exception {
         mockMvc.perform(get("/articles"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.TEXT_HTML));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML));
     }
 
     @DisplayName("게시글 해시태그 검색 정상 호출")
@@ -54,6 +54,6 @@ class ArticleControllerTest {
     public void test04() throws Exception {
         mockMvc.perform(get("/articles/search-hashtag"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.TEXT_HTML));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML));
     }
 }
