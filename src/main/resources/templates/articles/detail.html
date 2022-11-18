@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+    <html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>게시판 페이지</title>
+</head>
+
+<body>
+
+    <header th:replace="header :: header">헤더</header>
+
+    <main>
+        <header>
+            <h1>
+                첫 번째 글
+            </h1>
+        </header>
+
+        <!--본문 영역의 옆에 사용하는 태그-->
+        <aside>
+            <p>Heo</p>
+            <p>2022-11-18</p>
+        </aside>
+
+        <section>
+            <div>
+                본문<br>
+<!--                <p th:text="${forwardValue}">View 로 넘어온 값 ==> </p>-->
+                <p>View 로 넘어온 값 [[${forwardValue}]]</p>
+            </div><br><br>
+
+            <div>
+                <form>
+                    <label for="articleCommnet" hidden>댓글</label>
+                    <textarea id="articleCommnet" placeholder="댓글을 입력하세요." rows="5" cols="100"></textarea>
+                    <button type="submit">쓰기</button>
+                </form>
+            </div>
+
+            <ul>
+                <li>
+                    <div>
+                        <time><small>[[${writtenDate}]]</small></time>
+                        <time><small>[[${writtenTime}]]</small></time>
+                        <strong>Heo</strong>
+                        <p>
+                            2022년 11월 18일 날 댓글을 썼어요.
+                        </p>
+                    </div>
+                </li>
+            </ul>
+        </section>
+    </main>
+
+    <footer th:replace="~{footer :: footer}"></footer>
+
+</body>
+</html>
