@@ -1,8 +1,10 @@
 package com.fastcampus.projectborad.domain;
 
+import com.fastcampus.projectborad.dto.ArticleCommentDto;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.Fetch;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -26,6 +28,10 @@ public class Article extends AuditingFields{
     private Long id;
 
     @Setter
+    @ManyToOne(optional = false)
+    private UserAccount userAccount;
+
+    @Setter
     @Column(nullable = false)
     private String title;
 
@@ -43,16 +49,15 @@ public class Article extends AuditingFields{
 
     protected Article() {}
 
-    private Article(String title, String content, String hashtag) {
+    private Article(UserAccount userAccount, String title, String content, String hashtag) {
         this.title = title;
+        this.userAccount = userAccount;
         this.content = content;
         this.hashtag = hashtag;
     }
-
-    public static Article of(String title, String content, String hashtag) {
-        return new Article(title, content, hashtag);
+    public static Article of(String title, UserAccount userAccount, String content, String hashtag) {
+        return new Article(userAccount, title, content, hashtag);
     }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

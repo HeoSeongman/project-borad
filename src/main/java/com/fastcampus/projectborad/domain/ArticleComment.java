@@ -26,6 +26,9 @@ public class ArticleComment extends AuditingFields{
     @ManyToOne(optional = false)
     private Article article;
 
+    @ManyToOne(optional = false)
+    private UserAccount userAccount;
+
     @Setter
     @Column(nullable = false, length = 500)
     private String content;
@@ -39,6 +42,8 @@ public class ArticleComment extends AuditingFields{
     public static ArticleComment of(Article article, String content) {
         return new ArticleComment(article, content);
     }
+
+
 
     @Override
     public boolean equals(Object o) {

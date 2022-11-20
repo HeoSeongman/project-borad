@@ -53,14 +53,14 @@
 
     <main class="container">
         <header class="blog-post-title border-bottom">
-            <h1>
+            <h1 th:text="${article.title}">
                 첫 번째 글
             </h1>
         </header>
 
         <div class="blog-post">
             <section class="col-md-9">
-                <div class="blog-post-content padding border-bottom">
+                <div class="blog-post-content padding border-bottom" th:text="${article.content}">
                     View 로 넘어온 값 [[${forwardValue}]]
                     <br>
                     본문임.<br>
@@ -117,6 +117,15 @@
                     <div class="submitButtonDiv">
                         <button class="submitButton btn btn-primary" type="submit">쓰기</button>
                     </div>
+                </div>
+
+                <div>
+                    <ul>
+                        <li th:each="comment : ${articleComments}">
+                            <strong th:text="${comment.createdBy}"></strong>
+                            <p th:text="${comment.content}"></p>
+                        </li>
+                    </ul>
                 </div>
             </section>
 

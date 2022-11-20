@@ -37,23 +37,11 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>첫번째 글</td>
-                    <td>#Java</td>
-                    <td>Heo</td>
-                    <td>2022-11-18</td>
-                </tr>
-                <tr>
-                    <td>두번째 글</td>
-                    <td>#Spring</td>
-                    <td>Heo</td>
-                    <td>2022-11-18</td>
-                </tr>
-                <tr>
-                    <td>세번째 글</td>
-                    <td>#Vue.js</td>
-                    <td>Heo</td>
-                    <td>2022-11-18</td>
+                <tr th:each="article : ${articles}">
+                    <td><a th:text="${article.title}" th:href="@{/articles/{id}(id=${article.id})}"></a></td>
+                    <td th:text="${article.hashtag}"></td>
+                    <td th:text="${article.nickname}"></td>
+                    <td th:text="${article.createdAt}"></td>
                 </tr>
             </tbody>
         </table>
