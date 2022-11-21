@@ -6,6 +6,19 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
     <link href="/css/searchBar.css" rel="stylesheet">
     <title>게시판 페이지</title>
+
+    <style>
+        table thead tr th a {
+            text-decoration: none;
+            color: black;
+        }
+
+        table thead tr th a:hover {
+            color: black;
+        }
+
+    </style>
+
 </head>
 
 <body>
@@ -30,10 +43,41 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th class="col-6">제목</th>
-                    <th class="col">해시태그</th>
-                    <th class="col">작성자</th>
-                    <th class="col">작성일</th>
+                    <th class="col-6">
+<!--                        여기서는 gerOrderFor() 함수를 실행하기 위해서 접근하고자 하는 오브젝트의 속성 이름부터 함수이름까지 전부 작성했다.-->
+                        <a th:href="@{/articles(
+                        page=${articles.number},
+                        sort='title' + (${articles.getSort().getOrderFor('title')} != null ? (${articles.getSort().getOrderFor('title').direction.name} != 'DESC' ? ',desc' : '') : ''),
+                        searchType=${param.searchType},
+                        searchValue=${param.searchValue}
+                        )}">제목</a>
+                    </th>
+                    <th class="col" th:object="${articles}">
+<!--                        여기는 상위 요소에다가 접근하고자 하는 오브젝트를 등록하고, 하위 요소에서 '*{} 선택 변수 표현식' 으로 이전에 등록된 오브젝트를 바로 사용한다.-->
+                        <a th:href="@{/articles(
+                        page=${articles.number},
+                        sort='hashtag' + (*{sort.getOrderFor('hashtag')} != null ? (*{sort.getOrderFor('hashtag').direction.name} != 'DESC' ? ',desc' : '') : ''),
+                        searchType=${param.searchType},
+                        searchValue=${param.searchValue}
+                        )}">해시태그</a>
+                    </th>
+                    <th class="col">
+<!--                        상위에 등록된 오브젝트가 없으면 일반 변수 표현식대로 작성해야한다.-->
+                        <a th:href="@{/articles(
+                        page=${articles.number},
+                        sort='userAccount.userId' + (*{articles.getSort().getOrderFor('userAccount.userId')} != null ? (*{articles.getSort().getOrderFor('userAccount.userId').direction.name} != 'DESC' ? ',desc' : '') : ''),
+                        searchType=${param.searchType},
+                        searchValue=${param.searchValue}
+                        )}">작성자</a>
+                    </th>
+                    <th class="col">
+                        <a th:href="@{/articles(
+                        page=${articles.number},
+                        sort='createdAt' + (*{articles.getSort().getOrderFor('createdAt')} != null ? (*{articles.getSort().getOrderFor('createdAt').direction.name} != 'DESC' ? ',desc' : '') : ''),
+                        searchType=${param.searchType},
+                        searchValue=${param.searchValue}
+                        )}">작성일</a>
+                    </th>
                 </tr>
             </thead>
             <tbody>
