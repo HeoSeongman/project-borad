@@ -3,6 +3,7 @@ package com.fastcampus.projectborad.controller;
 import com.fastcampus.projectborad.dto.ArticleAndCommentsDto;
 import com.fastcampus.projectborad.dto.UserAccountDto;
 import com.fastcampus.projectborad.service.ArticleService;
+import com.fastcampus.projectborad.service.PaginationService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,14 +12,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -33,6 +33,8 @@ class ArticleControllerTest {
 
     @MockBean
     private ArticleService articleService;
+    @MockBean
+    private PaginationService paginationService;
 
     public ArticleControllerTest(@Autowired MockMvc mockMvc) {
         this.mockMvc = mockMvc;
@@ -43,14 +45,17 @@ class ArticleControllerTest {
     public void test01() throws Exception {
 
         given(articleService.searchArticles(eq(null), eq(null), any(Pageable.class))).willReturn(Page.empty());
+        given(paginationService.getPaginationBarNumber(anyInt(), anyInt())).willReturn(List.of());
 
         mockMvc.perform(get("/articles"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                .andExpect(model().attributeExists("articles"));
+                .andExpect(model().attributeExists("articles"))
+                .andExpect(model().attributeExists("paginationBarNumber"));
                 // model 에 articles 라는 속성이 있는지?
 
         then(articleService).should().searchArticles(eq(null), eq(null), any(Pageable.class));
+        then(paginationService).should().getPaginationBarNumber(anyInt(), anyInt());
     }
 
     @DisplayName("게시글 한 건 정상 호출")

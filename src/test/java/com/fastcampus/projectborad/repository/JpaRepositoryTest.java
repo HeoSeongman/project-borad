@@ -43,9 +43,12 @@ class JpaRepositoryTest {
 //        assertEquals(0, articleRepository.count());
 //        System.out.println(articleRepository.count());
 //        userAccountRepository.save(UserAccount.of("tjdaks0804", "TJDaks!@06", "tjdaks0804@naver.com", "Duri", "Hi, I'm Duri."));
-//        UserAccount userAccount = userAccountRepository.findById(1L).get();
+        UserAccount userAccount = userAccountRepository.findById(1L).get();
 //        Article article = articleRepository.save(Article.of("Title 2", userAccount, "Content 2", "#Spring"));
 //        System.out.println(article);
+        for (int i = 3; i < 100; i++) {
+            articleRepository.save(Article.of("Title " + i, userAccount, "Content " + i, "#Spring for"));
+        }
         System.out.println(articleRepository.findById(1L));
     }
 //
