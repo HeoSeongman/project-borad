@@ -21,22 +21,24 @@
 
 </head>
 
+<!--<option>제목</option>-->
+<!--<option>본문</option>-->
+<!--<option>ID</option>-->
+<!--<option>닉네임</option>-->
+<!--<option>해시태그</option>-->
+
 <body>
 
     <header th:replace="header :: header">헤더</header>
 
     <main class="container">
-        <form>
+        <form action="/articles" method="get">
             <label for="search-type" hidden>유형</label>
-            <select id="search-type" name="search-type" class="form-select">
-                <option>제목</option>
-                <option>본문</option>
-                <option>ID</option>
-                <option>닉네임</option>
-                <option>해시태그</option>
+            <select id="search-type" name="searchType" class="form-select">
+                <option th:each="searchType : ${searchTypes}" th:text="${searchType.description}" th:value="${searchType.name}" th:selected="${param.searchType != null && (param.searchType.toString == searchType.name)}"></option>
             </select>
             <label for="search-value" hidden>검색어</label>
-            <input type="search" id="search-value" placeholder="검색어를 입력하세요." name="search-value" class="form-control"/>
+            <input type="search" id="search-value" placeholder="검색어를 입력하세요." name="searchValue" class="form-control" th:value="${param.searchValue}"/>
             <button type="submit" class="btn btn-primary">검색</button>
         </form>
 
@@ -95,14 +97,14 @@
             <ul class="pagination justify-content-center">
                 <li class="page-item">
 <!--                    <a th:class="'page-link' + (${articles.number} - 1 < 0 ? ' disabled' : '')" th:href="@{/articles(page=${articles.number - 1})}">Previous</a>-->
-                    <a th:class="'page-link' + (${articles.first} ? ' disabled' : '')" th:href="@{/articles(page=${articles.number - 1})}">이전</a>
+                    <a th:class="'page-link' + (${articles.first} ? ' disabled' : '')" th:href="@{/articles(page=${articles.number - 1}, sort=${param.sort}, searchType=${param.searchType}, searchValue=${param.searchValue})}">이전</a>
                 </li>
                 <li th:class="page-item" th:each="pageNumber : ${pageBarNumber}">
-                    <a th:text="${pageNumber + 1}" th:class="'page-link' + (${pageNumber} == ${articles.number} ? ' active' : '')" th:href="@{/articles(page=${pageNumber})}"></a>
+                    <a th:text="${pageNumber + 1}" th:class="'page-link' + (${pageNumber} == ${articles.number} ? ' active' : '')" th:href="@{/articles(page=${pageNumber}, sort=${param.sort}, searchType=${param.searchType}, searchValue=${param.searchValue})}"></a>
                 </li>
                 <li class="page-item">
 <!--                    <a th:class="'page-link' + (${articles.number} + 1 >= ${articles.totalPages} ? ' disabled' : '')" th:href="@{/articles(page=${articles.number + 1})}">Next</a>-->
-                    <a th:class="'page-link' + (${articles.last} ? ' disabled' : '')" th:href="@{/articles(page=${articles.number + 1})}">다음</a>
+                    <a th:class="'page-link' + (${articles.last} ? ' disabled' : '')" th:href="@{/articles(page=${articles.number + 1}, sort=${param.sort}, searchType=${param.searchType}, searchValue=${param.searchValue})}">다음</a>
                 </li>
             </ul>
         </nav>

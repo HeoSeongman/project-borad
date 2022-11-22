@@ -1,5 +1,7 @@
 package com.fastcampus.projectborad.controller;
 
+import com.fastcampus.projectborad.config.SecurityConfig;
+import com.fastcampus.projectborad.domain.typeEnum.SearchType;
 import com.fastcampus.projectborad.dto.ArticleAndCommentsDto;
 import com.fastcampus.projectborad.dto.UserAccountDto;
 import com.fastcampus.projectborad.service.ArticleService;
@@ -9,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -25,6 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @DisplayName("View 컨트롤러 테스트 - 게시글")
+@Import(SecurityConfig.class)
 // WebMvcTest 의 값이 비어있으면 모든 컨트롤러를 불러들여 테스트를 진행한다. 값을 추가하면 해당 컨트롤러만 테스트한다.
 @WebMvcTest(ArticleController.class)
 class ArticleControllerTest {
@@ -44,17 +48,23 @@ class ArticleControllerTest {
     @Test
     public void test01() throws Exception {
 
-        given(articleService.searchArticles(eq(null), eq(null), any(Pageable.class))).willReturn(Page.empty());
+        SearchType searchType = SearchType.Title;
+        String searchValue = "title";
+
+        given(articleService.searchArticles(eq(searchType), eq(searchValue), any(Pageable.class))).willReturn(Page.empty());
         given(paginationService.getPaginationBarNumber(anyInt(), anyInt())).willReturn(List.of());
 
-        mockMvc.perform(get("/articles"))
+        mockMvc.perform(get("/articles")
+                        .queryParam("searchType", searchType.name())
+                        .queryParam("searchValue", searchValue))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(model().attributeExists("articles"))
-                .andExpect(model().attributeExists("paginationBarNumber"));
+                .andExpect(model().attributeExists("pageBarNumber"))
+                .andExpect(model().attributeExists("searchTypes"));
                 // model 에 articles 라는 속성이 있는지?
 
-        then(articleService).should().searchArticles(eq(null), eq(null), any(Pageable.class));
+        then(articleService).should().searchArticles(eq(searchType), eq(searchValue), any(Pageable.class));
         then(paginationService).should().getPaginationBarNumber(anyInt(), anyInt());
     }
 
