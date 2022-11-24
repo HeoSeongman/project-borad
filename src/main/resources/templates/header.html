@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -22,8 +22,9 @@
                 </ul>
 
                 <div class="text-end">
-                    <button type="button" class="btn btn-outline-light me-2">로그인</button>
-                    <button type="button" class="btn btn-warning">회원가입</button>
+                    <span sec:authorize="isAuthenticated()" sec:authentication="name"></span>
+                    <a type="button" class="btn btn-outline-light me-2" href="/login" sec:authorize="!isAuthenticated()">로그인</a>
+                    <a type="button" class="btn btn-warning" href="/logout" sec:authorize="isAuthenticated()">로그아웃</a>
                 </div>
             </div>
         </div>

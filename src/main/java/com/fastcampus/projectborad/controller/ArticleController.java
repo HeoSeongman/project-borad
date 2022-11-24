@@ -66,15 +66,14 @@ public class ArticleController {
     }
 
     @PostMapping("/form")
-    public String createArticle(ArticleRequest articleRequest) {
-//        articleService.saveArticle(articleRequest.toDto(
-//                UserAccountDto.of(1L, "tjdaks0804", "TJDaks!@06", "Duri", "tjdaks0804@naver.com", "Hi, I''m Duri.")));
+    public String createArticle(ArticleRequest articleRequest, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
+        articleService.saveArticle(articleRequest.toDto(boardPrincipal.toDto()));
 
         return "redirect:/articles";
     }
 
     @PostMapping("/{articleId}/form")
-    public String createArticle(@PathVariable Long articleId, ArticleRequest articleRequest, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
+    public String updateArticle(@PathVariable Long articleId, ArticleRequest articleRequest, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
         articleService.saveArticle(articleRequest.toDto(boardPrincipal.toDto()));
 
         return "redirect:/articles";

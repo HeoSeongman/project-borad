@@ -36,10 +36,10 @@ public class SecurityConfig {
                 .build();
     }
 
-//    @Bean
-//    public WebSecurityCustomizer webSecurityCustomizer() {
-//        return (web) -> web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
-//    }
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+    }
 
     @Bean
     public UserDetailsService userDetailsService(UserAccountRepository userAccountRepository) {

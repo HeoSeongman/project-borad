@@ -13,12 +13,7 @@ import javax.persistence.*;
 @Entity
 public class UserAccount extends AuditingFields {
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    private Long id;
-
-    @Column(nullable = false, unique = true)
-    @Setter
     private String userId;
 
     @Column(nullable = false)
@@ -37,16 +32,22 @@ public class UserAccount extends AuditingFields {
 
     protected UserAccount() {}
 
-    private UserAccount(String userId, String userPassword, String email, String nickname, String introduce) {
+    private UserAccount(String userId, String userPassword, String email, String nickname, String introduce, String createdBy) {
         this.userId = userId;
         this.userPassword = userPassword;
         this.email = email;
         this.nickname = nickname;
         this.introduce = introduce;
+        this.createdBy = createdBy;
+        this.modifiedBy = createdBy;
     }
 
     public static UserAccount of(String userId, String userPassword, String email, String nickname, String introduce) {
-        return new UserAccount(userId, userPassword, email, nickname, introduce);
+        return new UserAccount(userId, userPassword, email, nickname, introduce, null);
+    }
+
+    public static UserAccount of(String userId, String userPassword, String email, String nickname, String introduce, String createdBy) {
+        return new UserAccount(userId, userPassword, email, nickname, introduce, createdBy);
     }
 
 

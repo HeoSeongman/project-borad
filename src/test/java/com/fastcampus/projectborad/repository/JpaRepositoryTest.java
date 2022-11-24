@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -42,14 +43,16 @@ class JpaRepositoryTest {
 
 //        assertEquals(0, articleRepository.count());
 //        System.out.println(articleRepository.count());
-//        userAccountRepository.save(UserAccount.of("tjdaks0804", "TJDaks!@06", "tjdaks0804@naver.com", "Duri", "Hi, I'm Duri."));
-        UserAccount userAccount = userAccountRepository.findById(1L).get();
-//        Article article = articleRepository.save(Article.of("Title 2", userAccount, "Content 2", "#Spring"));
-//        System.out.println(article);
-        for (int i = 3; i < 100; i++) {
-            articleRepository.save(Article.of("Title " + i, userAccount, "Content " + i, "#Spring for"));
-        }
-        System.out.println(articleRepository.findById(1L));
+        UserAccount userAccount = UserAccount.of("tjdaks0804", "TJDaks!@06", "tjdaks0804@naver.com", "Duri", "Hi, I'm Duri.", "Heo");
+        System.out.println(userAccount.getCreatedAt());
+        userAccountRepository.save(userAccount);
+//        UserAccount userAccount = userAccountRepository.findById("tjdaks0804").get();
+////        Article article = articleRepository.save(Article.of("Title 2", userAccount, "Content 2", "#Spring"));
+////        System.out.println(article);
+//        for (int i = 0; i < 100; i++) {
+//            articleRepository.save(Article.of("Title " + i, userAccount, "Content " + i, "#Spring for"));
+//        }
+//        System.out.println(userAccount.toString());
     }
 //
 //
@@ -64,10 +67,10 @@ class JpaRepositoryTest {
 //
 //        Article savedArticle = articleRepository.saveAndFlush(
 //                Article.of(
-//                        "new article 1",
-//                        UserAccount.of("tjdaks0804", "TJDaks!@06", "tjdaks0804@naver.com", "Duri", "뽐나는차두리입니다."),
-//                        "new content 11111",
-//                        "#spring"));
+//                        "article 1",
+//                        UserAccount.of("tjdaks0804", "TJDaks!@06", "tjdaks0804@naver.com", "Duri", "뽐나는차두리입니다.", "Heo"),
+//                        "content 11111",
+//                        "#spring 1"));
 //
 //        assertEquals(previousCount + 1, articleRepository.count());
 //        assertNotNull(savedArticle);

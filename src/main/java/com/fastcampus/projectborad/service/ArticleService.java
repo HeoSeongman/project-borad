@@ -25,7 +25,6 @@ import java.util.List;
 @Transactional
 @Service
 public class ArticleService {
-
     private final ArticleRepository articleRepository;
     private final UserAccountRepository userAccountRepository;
 
