@@ -30,6 +30,8 @@ public interface ArticleRepository extends JpaRepository<Article, Long>, Queryds
         bindings.bind(root.createdBy).first(StringExpression::containsIgnoreCase);
     }
 
+    void deleteByIdAndUserAccount_UserId(Long articleId, String UserId);
+
     Page<Article> findByTitleContaining(String title, Pageable pageable);
     Page<Article> findByIdContaining(String title, Pageable pageable);
     Page<Article> findByContentContaining(String title, Pageable pageable);

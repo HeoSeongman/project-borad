@@ -96,7 +96,7 @@ class ArticleServiceTest {
         //삭제될 때(delete) 를 조건으로 지정
         willDoNothing().given(articleRepository).delete(any(Article.class));
 
-        articleService.deleteArticle(1L);
+//        articleService.deleteArticle(1L);
 
         //그렇다면(then) articleRepository mock 객체가
         //Article 클래스를 가진 어떠한(any) 객체를

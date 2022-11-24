@@ -35,7 +35,7 @@ public class ArticleCommentService {
 
 //        Article article = articleRepository.findById(articleCommentDto.articleId()).orElseThrow();
         Article article = articleRepository.getReferenceById(articleCommentDto.articleId());
-        UserAccount userAccount = userAccountRepository.getReferenceById(articleCommentDto.userAccountDto().id());
+        UserAccount userAccount = userAccountRepository.getReferenceById(articleCommentDto.userAccountDto().userId());
 //        System.out.println("userAccount : " + userAccount.getEmail());
 //        UserAccount userAccount = userAccountRepository.findById(articleCommentDto.userAccountDto().id()).orElseThrow();
 //        UserAccount userAccount = userAccountRepository.getReferenceById(articleCommentDto.userAccountDto().id());
@@ -45,7 +45,7 @@ public class ArticleCommentService {
         articleCommentRepository.save(articleComment);
     }
 
-    public void deleteArticleComment(Long commentId) {
-        articleCommentRepository.deleteById(commentId);
+    public void deleteArticleComment(Long commentId, String userId) {
+        articleCommentRepository.deleteByIdAndUserAccount_UserId(commentId, userId);
     }
 }

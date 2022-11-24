@@ -6,6 +6,7 @@ import com.fastcampus.projectborad.dto.ArticleAndCommentsDtoResponse;
 import com.fastcampus.projectborad.dto.ArticleDtoResponse;
 import com.fastcampus.projectborad.dto.UserAccountDto;
 import com.fastcampus.projectborad.dto.request.ArticleRequest;
+import com.fastcampus.projectborad.dto.security.BoardPrincipal;
 import com.fastcampus.projectborad.service.ArticleService;
 import com.fastcampus.projectborad.service.PaginationService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -72,16 +74,15 @@ public class ArticleController {
     }
 
     @PostMapping("/{articleId}/form")
-    public String createArticle(@PathVariable Long articleId, ArticleRequest articleRequest) {
-//        articleService.saveArticle(articleRequest.toDto(
-//                UserAccountDto.of(1L, "tjdaks0804", "TJDaks!@06", "Duri", "tjdaks0804@naver.com", "Hi, I''m Duri.")));
+    public String createArticle(@PathVariable Long articleId, ArticleRequest articleRequest, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
+        articleService.saveArticle(articleRequest.toDto(boardPrincipal.toDto()));
 
         return "redirect:/articles";
     }
 
     @PostMapping("/{articleId}/delete")
-    public String deleteArticle(@PathVariable Long articleId) {
-//        articleService.deleteArticle(articleId);
+    public String deleteArticle(@PathVariable Long articleId, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
+        articleService.deleteArticle(articleId, boardPrincipal.getUsername());
         System.out.println("delete 호출됨 : " + articleId);
 
         return "redirect:/articles";

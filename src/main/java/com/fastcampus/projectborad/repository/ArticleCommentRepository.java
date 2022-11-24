@@ -25,5 +25,7 @@ public interface ArticleCommentRepository extends JpaRepository<ArticleComment, 
         bindings.bind(root.createdBy).first(StringExpression::containsIgnoreCase);
     }
 
+    void deleteByIdAndUserAccount_UserId(Long articleCommentId, String userId);
+
     List<ArticleComment> findByArticle_Id(Long articleId);
 }

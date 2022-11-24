@@ -8,6 +8,7 @@ import com.fastcampus.projectborad.dto.ArticleDto;
 import com.fastcampus.projectborad.dto.ArticleUpdateDto;
 import com.fastcampus.projectborad.dto.UserAccountDto;
 import com.fastcampus.projectborad.repository.ArticleRepository;
+import com.fastcampus.projectborad.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import java.util.List;
 public class ArticleService {
 
     private final ArticleRepository articleRepository;
+    private final UserAccountRepository userAccountRepository;
 
     @Transactional(readOnly = true)
     public Page<ArticleDto> searchArticles(SearchType title, String search_keyword) {
@@ -67,15 +69,19 @@ public class ArticleService {
     public void updateArticle(ArticleDto articleDto) {
         try {
             Article article = articleRepository.getReferenceById(articleDto.id());
-            if (articleDto.title() != null) { article.setTitle(articleDto.title()); }
-            if (articleDto.content() != null) { article.setContent(articleDto.content()); }
-            article.setHashtag(articleDto.hashtag());
+            UserAccount userAccount = userAccountRepository.getReferenceById(articleDto.userAccountDto().userId());
+
+            if (article.getUserAccount().equals(userAccount)) {
+                if (articleDto.title() != null) { article.setTitle(articleDto.title()); }
+                if (articleDto.content() != null) { article.setContent(articleDto.content()); }
+                article.setHashtag(articleDto.hashtag());
+            }
         } catch (EntityNotFoundException e) {
-            log.warn("게시글 업데이트 실패. 게시글을 찾을 수 없습니다. dto : {}", articleDto);
+            log.warn("게시글 업데이트 실패. 게시글을 수정하는데 필요한 정보를 찾을 수 없습니다." + e.getLocalizedMessage());
         }
     }
 
-    public void deleteArticle(long articleId) {
-        articleRepository.deleteById(articleId);
+    public void deleteArticle(long articleId, String userId) {
+        articleRepository.deleteByIdAndUserAccount_UserId(articleId, userId);
     }
 }
