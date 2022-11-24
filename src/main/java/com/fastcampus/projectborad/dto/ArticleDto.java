@@ -21,8 +21,8 @@ public record ArticleDto(LocalDateTime createdAt, String createdBy, Long id, Str
         return new ArticleDto(createdAt, createdBy, id, title, userAccountDto, content, hashtag);
     }
 
-    public static ArticleDto of(String title, String content, String hashtag) {
-        return new ArticleDto(null, null, null,  title, null, content, hashtag);
+    public static ArticleDto of(String title, String content, String hashtag, UserAccountDto userAccountDto) {
+        return new ArticleDto(null, null, null,  title, userAccountDto, content, hashtag);
     }
 
     public static ArticleDto from(Article entity) {

@@ -2,6 +2,7 @@ package com.fastcampus.projectborad.dto;
 
 import com.fastcampus.projectborad.domain.Article;
 import com.fastcampus.projectborad.domain.ArticleComment;
+import com.fastcampus.projectborad.domain.UserAccount;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -14,12 +15,13 @@ public record ArticleCommentDtoResponse(
         String createdBy,
         LocalDateTime modifiedAt,
         String modifiedBy,
+        Long id,
         String content
 
 ) implements Serializable {
 
-    public static ArticleCommentDtoResponse of(LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy, String content) {
-        return new ArticleCommentDtoResponse(createdAt, createdBy, modifiedAt, modifiedBy, content);
+    public static ArticleCommentDtoResponse of(LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy, Long id, String content) {
+        return new ArticleCommentDtoResponse(createdAt, createdBy, modifiedAt, modifiedBy, id, content);
     }
 
     public static ArticleCommentDtoResponse from(ArticleCommentDto articleCommentDto) {
@@ -28,6 +30,7 @@ public record ArticleCommentDtoResponse(
                 articleCommentDto.createdBy(),
                 articleCommentDto.modifiedAt(),
                 articleCommentDto.modifiedBy(),
+                articleCommentDto.id(),
                 articleCommentDto.content()
         );
     }
@@ -35,6 +38,7 @@ public record ArticleCommentDtoResponse(
     public ArticleComment toEntity(Article article) {
         return ArticleComment.of(
                 article,
+                article.getUserAccount(),
                 content
         );
     }

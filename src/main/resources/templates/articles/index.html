@@ -17,6 +17,15 @@
             color: black;
         }
 
+        .bottomButtons {
+            position: relative;
+        }
+
+        .bottomButtons .writeArticle {
+            position: absolute;
+            right: 0;
+        }
+
     </style>
 
 </head>
@@ -93,7 +102,8 @@
         </table>
 
         <!--삼항연산자에서 true 일때 ' disabled' 해 놨는데, 띄어쓰기를 안해서 "page-linkdisabled 로 출력됨. 띄어쓰기 주의!!!"-->
-        <nav aria-label="Page navigation example">
+        <nav aria-label="Page navigation example" class="bottomButtons">
+            <a class="btn btn-primary writeArticle" href="/articles/form">글쓰기</a>
             <ul class="pagination justify-content-center">
                 <li class="page-item">
 <!--                    <a th:class="'page-link' + (${articles.number} - 1 < 0 ? ' disabled' : '')" th:href="@{/articles(page=${articles.number - 1})}">Previous</a>-->

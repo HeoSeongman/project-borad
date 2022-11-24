@@ -49,6 +49,10 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+test {
+	exclude '**/*'
+}
+
 ////queryDSL 설정 부분( Q파일 생성이 안됐음)
 //def generated = 'src/main/generated'
 //

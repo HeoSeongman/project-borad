@@ -16,7 +16,7 @@
             margin: 0 auto;
         }
 
-        .container header {
+        .container .blog-post-title {
             text-align: center;
             padding-bottom: 20px;
         }
@@ -25,24 +25,54 @@
             display: flex;
         }
 
+        .container .blog-post .blog-post-content .postButtons {
+            display: flex;
+            justify-content: end;
+        }
 
-        .container .blog-post-comments form {
+        .container .blog-post .blog-post-content .postButtons > * {
+            margin-left: 10px;
+        }
+
+        .container .blog-post-comment form {
             display: flex;
         }
 
-        .container .blog-post-comments .articleCommentArea {
+        .container .blog-post-comment .articleCommentArea {
             flex-grow: 1;
             height: 100px;
         }
 
-        .container .blog-post-comments .submitButtonDiv {
+        .container .blog-post-comment .postCommentButtons {
             display: flex;
+            justify-content: end;
+            margin-top: 10px
         }
 
-        .container .blog-post-comments .submitButtonDiv .submitButton {
-            margin-left: auto;
-            margin-top: 5px;
+        .container .blog-post-comment .postCommentButtons > * {
+            margin-left: 10px;
         }
+
+        .container .blog-post-comments .comment {
+            position: relative;
+            margin: 0;
+        }
+
+        .container .blog-post-comments .comment strong {
+            font-size: 20px;
+        }
+
+        .container .blog-post-comments .comment p {
+            margin: 10px auto 30px;
+        }
+
+        .container .blog-post-comments .comment .commentDeleteButton {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+
     </style>
 
 </head>
@@ -60,70 +90,42 @@
 
         <div class="blog-post">
             <section class="col-md-9">
-                <div class="blog-post-content padding border-bottom" th:text="${article.content}">
-                    View 로 넘어온 값 [[${forwardValue}]]
-                    <br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.<br>
-                    본문임.
-                </div>
-
-                <div class="blog-post-comments padding">
-                    <form>
-                        <label for="articleComment" hidden>댓글</label>
-                        <textarea class="articleCommentArea form-control" id="articleComment" placeholder="댓글을 입력하세요."></textarea>
-                    </form>
-                    <div class="submitButtonDiv">
-                        <button class="submitButton btn btn-primary" type="submit">쓰기</button>
+<!--                <div class="blog-post-content padding border-bottom" th:text="${article.content}">-->
+                <div class="blog-post-content padding border-bottom" th:inline="text">
+                    [[${article.content}]]
+                    <div class="postButtons">
+                        <form th:action="@{/articles/{Id}/form(Id=${article.id})}" method="post">
+                            <button class="btn btn-warning" type="submit">수정</button>
+                        </form>
+<!--                        폼 제출 경로를 동적으로 변경되게 하고싶으면, 경로를 적은 후 끝에다 변수를 적어야하는 것 같다.-->
+<!--                        이걸로 계속 시도했다. <form th:action="@{/articles/{Id}(Id=${article.id})/delete}" method="post">-->
+                        <form th:action="@{/articles/{Id}/delete(Id=${article.id})}" method="post">
+                            <button class="btn btn-danger" type="submit">삭제</button>
+                        </form>
                     </div>
                 </div>
 
-                <div>
+                <div class="blog-post-comment padding">
+                    <form action="/comments/create" id="commentForm" method="post">
+                        <label for="articleComment" hidden>댓글</label>
+                        <input name="articleId" th:value="${article.id}" hidden/>
+                        <textarea class="articleCommentArea form-control" id="articleComment" name="content" placeholder="댓글을 입력하세요."></textarea>
+                    </form>
+                    <div class="postCommentButtons">
+                        <a class="btn btn-primary" href="/articles">목록</a>
+                        <button class="btn btn-outline-primary" type="submit" form="commentForm">쓰기</button>
+                    </div>
+                </div>
+
+                <div class="blog-post-comments padding">
                     <ul>
-                        <li th:each="comment : ${articleComments}">
+                        <li th:each="comment : ${articleComments}" class="comment">
                             <strong th:text="${comment.createdBy}"></strong>
                             <p th:text="${comment.content}"></p>
+                            <form th:action="@{/comments/{Id}/delete(Id=${comment.id})}" method="post">
+                                <input th:value="${article.id}" name="articleId" hidden>
+                                <button class="commentDeleteButton btn btn-outline-danger" type="submit">삭제</button>
+                            </form>
                         </li>
                     </ul>
                 </div>

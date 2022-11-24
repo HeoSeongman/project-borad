@@ -1,6 +1,5 @@
 package com.fastcampus.projectborad.domain;
 
-import com.fastcampus.projectborad.dto.ArticleCommentDto;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -47,7 +46,9 @@ public class Article extends AuditingFields{
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
     private final Set<ArticleComment> articleComments = new LinkedHashSet<>();
 
-    protected Article() {}
+    protected Article() {
+
+    }
 
     private Article(UserAccount userAccount, String title, String content, String hashtag) {
         this.title = title;
