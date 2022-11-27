@@ -25,14 +25,19 @@ public class SecurityConfig {
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .mvcMatchers(
                                 HttpMethod.GET,
-                                "/",
-                                "/articles"
-                        ).permitAll()
-                        .anyRequest().authenticated()
+                                "/memberJoin").hasAuthority("ROLE_ANONYMOUS")
+                        .mvcMatchers(
+                                HttpMethod.POST,
+                                "/memberJoin").hasAuthority("ROLE_ANONYMOUS")
+                        .mvcMatchers(
+                                HttpMethod.GET,
+                                "/articles/*/form").authenticated()
+                        .anyRequest().permitAll()
                 )
                 .csrf().disable()
                 .formLogin().and()
                 .logout().logoutSuccessUrl("/").and()
+                .exceptionHandling( error -> error.accessDeniedPage("/"))
                 .build();
     }
 
@@ -48,7 +53,6 @@ public class SecurityConfig {
                 .map(UserAccountDto::from)
                 .map(BoardPrincipal::from)
                 .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다. username : " + username));
-
     }
 
     @Bean

@@ -45,10 +45,10 @@
         </header>
 
         <div class="posting">
-            <form action="/articles/form" method="post" class="postingForm">
-                <input class="form-control" name="title" placeholder="제목을 입력하세요." />
-                <textarea class="form-control" name="content" rows="20" placeholder="내용을 입력하세요."></textarea>
-                <input class="form-control" name="hashtag" placeholder="해시태그를 입력하세요." />
+            <form th:action="${formStatus.ordinal} ? '/articles/' + ${article?.id} + '/form' : '/articles/form'" method="post" class="postingForm">
+                <input class="form-control" name="title" placeholder="제목을 입력하세요." th:value="${article?.title} ? ${article?.title}"/>
+                <textarea class="form-control" name="content" rows="20" placeholder="내용을 입력하세요." th:text="${article?.content} ? ${article?.content}"></textarea>
+                <input class="form-control" name="hashtag" placeholder="해시태그를 입력하세요." th:value="${article?.hashtag} ? ${article?.hashtag}"/>
 
                 <div class="postingButtons">
                     <button type="button" class="btn btn-primary" th:onclick="'history.back()'">취소</button>

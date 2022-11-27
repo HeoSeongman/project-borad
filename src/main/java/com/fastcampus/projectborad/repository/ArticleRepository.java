@@ -33,7 +33,8 @@ public interface ArticleRepository extends JpaRepository<Article, Long>, Queryds
     void deleteByIdAndUserAccount_UserId(Long articleId, String UserId);
 
     Page<Article> findByTitleContaining(String title, Pageable pageable);
-    Page<Article> findByIdContaining(String title, Pageable pageable);
-    Page<Article> findByContentContaining(String title, Pageable pageable);
-    Page<Article> findByHashtagContaining(String title, Pageable pageable);
+    Page<Article> findByContentContaining(String content, Pageable pageable);
+    Page<Article> findByUserAccount_UserIdContaining(String userId, Pageable pageable);
+    Page<Article> findByUserAccount_NicknameContaining(String userId, Pageable pageable);
+    Page<Article> findByHashtagContaining(String hashtag, Pageable pageable);
 }

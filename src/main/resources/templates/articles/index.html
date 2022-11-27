@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-    <html lang="ko" xmlns:th="http://www.thymeleaf.org">
+    <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -79,7 +79,7 @@
                         sort='userAccount.userId' + (*{articles.getSort().getOrderFor('userAccount.userId')} != null ? (*{articles.getSort().getOrderFor('userAccount.userId').direction.name} != 'DESC' ? ',desc' : '') : ''),
                         searchType=${param.searchType},
                         searchValue=${param.searchValue}
-                        )}">작성자</a>
+                        )}">작성자 (아이디)</a>
                     </th>
                     <th class="col">
                         <a th:href="@{/articles(
@@ -95,7 +95,7 @@
                 <tr th:each="article : ${articles}">
                     <td><a th:text="${article.title}" th:href="@{/articles/{id}(id=${article.id})}"></a></td>
                     <td th:text="${article.hashtag}"></td>
-                    <td th:text="${article.nickname}"></td>
+                    <td th:text="${article.nickname} + ' (' + ${article.userId} + ')'"></td>
                     <td th:text="${article.createdAt}"></td>
                 </tr>
             </tbody>
@@ -103,7 +103,7 @@
 
         <!--삼항연산자에서 true 일때 ' disabled' 해 놨는데, 띄어쓰기를 안해서 "page-linkdisabled 로 출력됨. 띄어쓰기 주의!!!"-->
         <nav aria-label="Page navigation example" class="bottomButtons">
-            <a class="btn btn-primary writeArticle" href="/articles/form">글쓰기</a>
+            <a class="btn btn-primary writeArticle" href="/articles/form" sec:authorize="isAuthenticated()">글쓰기</a>
             <ul class="pagination justify-content-center">
                 <li class="page-item">
 <!--                    <a th:class="'page-link' + (${articles.number} - 1 < 0 ? ' disabled' : '')" th:href="@{/articles(page=${articles.number - 1})}">Previous</a>-->

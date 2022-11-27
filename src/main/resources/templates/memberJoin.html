@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <title>회원가입 페이지</title>
+
+    <style>
+
+        .joinMain {
+            width: 400px;
+            text-align: center;
+        }
+
+        .joinMain h2 {
+            margin-bottom: 30px;
+        }
+
+        .joinMain .joinForm > * {
+            margin-bottom: 10px;
+        }
+
+        .joinMain .joinForm button {
+            width: 100%;
+        }
+
+    </style>
+</head>
+<body>
+
+  <header th:replace="header :: header">헤더</header>
+
+  <main class="container joinMain">
+      <h2>회원 가입</h2>
+      <form action="/memberJoin" method="post" class="joinForm">
+        <input type="text" class="form-control form-control-lg" name="userId" placeholder="아이디를 입력하세요.">
+        <input type="password" class="form-control form-control-lg" name="userPassword" placeholder="비밀번호를 입력하세요.">
+        <input type="email" class="form-control form-control-lg" name="userEmail" placeholder="이메일을 입력하세요.">
+        <input type="text" class="form-control form-control-lg" name="userNickname" placeholder="닉네임을 입력하세요.">
+        <input type="text" class="form-control form-control-lg" name="userIntroduce" placeholder="소개를 입력하세요.">
+        <button type="submit" class="btn btn-primary btn-lg">가입</button>
+      </form>
+  </main>
+
+  <footer th:replace="~{footer :: footer}"></footer>
+
+</body>
+</html>

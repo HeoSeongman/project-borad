@@ -21,10 +21,11 @@
                     <li><a href="#" class="nav-link px-2 text-white">About</a></li>
                 </ul>
 
-                <div class="text-end">
-                    <span sec:authorize="isAuthenticated()" sec:authentication="name"></span>
+                <div>
+                    <span sec:authorize="isAuthenticated()"><span sec:authentication="name"></span> 님 환영합니다.</span>
                     <a type="button" class="btn btn-outline-light me-2" href="/login" sec:authorize="!isAuthenticated()">로그인</a>
                     <a type="button" class="btn btn-warning" href="/logout" sec:authorize="isAuthenticated()">로그아웃</a>
+                    <a type="button" class="btn btn-success" href="/memberJoin" sec:authorize="!isAuthenticated()">회원가입</a>
                 </div>
             </div>
         </div>

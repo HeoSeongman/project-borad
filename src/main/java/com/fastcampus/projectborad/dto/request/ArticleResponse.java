@@ -7,22 +7,24 @@ import com.fastcampus.projectborad.dto.UserAccountDto;
 import java.io.Serializable;
 
 /**
- * A DTO for the {@link com.fastcampus.projectborad.domain.Article} entity
+ * A DTO for the {@link Article} entity
  */
-public record ArticleRequest(
+public record ArticleResponse(
+        Long id,
         String title,
         String content,
         String hashtag
 
 ) implements Serializable {
 
-    public static ArticleRequest of(String title, String content, String hashtag) {
-        return new ArticleRequest(title, content, hashtag);
+    public static ArticleResponse of(Long id, String title, String content, String hashtag) {
+        return new ArticleResponse(id, title, content, hashtag);
     }
 
-    public static ArticleRequest from(ArticleDto articleDto) {
-        return ArticleRequest.of(
-            articleDto.title(),
+    public static ArticleResponse from(ArticleDto articleDto) {
+        return ArticleResponse.of(
+                articleDto.id(),
+                articleDto.title(),
                 articleDto.content(),
                 articleDto.hashtag()
         );

@@ -42,8 +42,8 @@ public class ArticleService {
         return switch (searchType) {
             case Title -> articleRepository.findByTitleContaining(search_keyword, pageable).map(ArticleDto::from);
             case Content -> articleRepository.findByContentContaining(search_keyword, pageable).map(ArticleDto::from);
-            case ID -> articleRepository.findByIdContaining(search_keyword, pageable).map(ArticleDto::from);
-            case NickName -> articleRepository.findAll(pageable).map(ArticleDto::from);
+            case ID -> articleRepository.findByUserAccount_UserIdContaining(search_keyword, pageable).map(ArticleDto::from);
+            case NickName -> articleRepository.findByUserAccount_NicknameContaining(search_keyword, pageable).map(ArticleDto::from);
             case Hashtag -> articleRepository.findByHashtagContaining(search_keyword, pageable).map(ArticleDto::from);
         };
     }
@@ -57,17 +57,18 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public ArticleAndCommentsDto searchArticleAndCommentDto(Long articleIdd) {
-        return ArticleAndCommentsDto.from(articleRepository.findById(articleIdd).get());
+    public ArticleAndCommentsDto searchArticleAndCommentDto(Long articleId) {
+        return ArticleAndCommentsDto.from(articleRepository.findById(articleId).get());
     }
 
-    public void saveArticle(ArticleDto articleDto) {
-        articleRepository.save(articleDto.toEntity());
+    public Long saveArticle(ArticleDto articleDto) {
+        Article article = articleRepository.save(articleDto.toEntity());
+        return article.getId();
     }
 
-    public void updateArticle(ArticleDto articleDto) {
+    public void updateArticle(Long articleId, ArticleDto articleDto) {
         try {
-            Article article = articleRepository.getReferenceById(articleDto.id());
+            Article article = articleRepository.getReferenceById(articleId);
             UserAccount userAccount = userAccountRepository.getReferenceById(articleDto.userAccountDto().userId());
 
             if (article.getUserAccount().equals(userAccount)) {

@@ -1,11 +1,14 @@
 package com.fastcampus.projectborad.controller;
 
+import com.fastcampus.projectborad.domain.Article;
 import com.fastcampus.projectborad.domain.typeEnum.FormStatus;
 import com.fastcampus.projectborad.domain.typeEnum.SearchType;
 import com.fastcampus.projectborad.dto.ArticleAndCommentsDtoResponse;
+import com.fastcampus.projectborad.dto.ArticleDto;
 import com.fastcampus.projectborad.dto.ArticleDtoResponse;
 import com.fastcampus.projectborad.dto.UserAccountDto;
 import com.fastcampus.projectborad.dto.request.ArticleRequest;
+import com.fastcampus.projectborad.dto.request.ArticleResponse;
 import com.fastcampus.projectborad.dto.security.BoardPrincipal;
 import com.fastcampus.projectborad.service.ArticleService;
 import com.fastcampus.projectborad.service.PaginationService;
@@ -59,24 +62,41 @@ public class ArticleController {
     }
 
     @GetMapping("/form")
-    public String formArticle(ModelMap map) {
+    public String createArticleForm(ModelMap map) {
         map.addAttribute("formStatus", FormStatus.CREATE);
+
+        return "articles/form";
+    }
+
+    @GetMapping("/{articleId}/form")
+    public String updateArticleForm(ModelMap map, @PathVariable Long articleId, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
+        ArticleDto articleDto = articleService.searchArticle(articleId);
+        System.out.println(articleDto.userAccountDto().userId());
+        System.out.println(boardPrincipal.getUsername());
+
+        if (!articleDto.userAccountDto().userId().equals(boardPrincipal.getUsername())) {
+            return "redirect:/articles/" + articleId;
+        }
+
+        ArticleResponse articleResponse = ArticleResponse.from(articleDto);
+
+        map.addAttribute("article", articleResponse);
+        map.addAttribute("formStatus", FormStatus.UPDATE);
 
         return "articles/form";
     }
 
     @PostMapping("/form")
     public String createArticle(ArticleRequest articleRequest, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
-        articleService.saveArticle(articleRequest.toDto(boardPrincipal.toDto()));
 
-        return "redirect:/articles";
+        return "redirect:/articles/" + articleService.saveArticle(articleRequest.toDto(boardPrincipal.toDto()));
     }
 
     @PostMapping("/{articleId}/form")
     public String updateArticle(@PathVariable Long articleId, ArticleRequest articleRequest, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
-        articleService.saveArticle(articleRequest.toDto(boardPrincipal.toDto()));
+        articleService.updateArticle(articleId, articleRequest.toDto(boardPrincipal.toDto()));
 
-        return "redirect:/articles";
+        return "redirect:/articles/" + articleId;
     }
 
     @PostMapping("/{articleId}/delete")
