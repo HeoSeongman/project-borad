@@ -10,10 +10,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 
 @RequiredArgsConstructor
+@RequestMapping("/")
 @Controller
 public class MainController {
 
@@ -21,7 +23,7 @@ public class MainController {
 
     private final UserAccountRepository userAccountRepository;
 
-    @GetMapping("/")
+    @GetMapping
     public String returnRoot() {
         return "redirect:/articles";
     }

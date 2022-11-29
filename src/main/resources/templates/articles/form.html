@@ -54,7 +54,6 @@
                     <button type="button" class="btn btn-primary" th:onclick="'history.back()'">취소</button>
                     <button type="submit" class="btn btn-outline-primary" th:text="${formStatus.getDescription}">제출</button>
                 </div>
-                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
             </form>
         </div>
     </main>
