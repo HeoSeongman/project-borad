@@ -28,12 +28,12 @@ public class MainController {
         return "redirect:/articles";
     }
 
-    @GetMapping("/memberJoin")
+    @GetMapping("memberJoin")
     public String memberJoinPage() {
         return "/memberJoin";
     }
 
-    @PostMapping("/memberJoin")
+    @PostMapping("memberJoin")
     public String memberJoining(UserAccountRequest userAccountRequest) {
         System.out.println("----------------------------------------Call memberJoining()----------------------------------------");
 //        System.out.println("USER nickname : " + userAccountRequest.userEmail());

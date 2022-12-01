@@ -41,6 +41,9 @@ public class Article extends AuditingFields{
     @Setter
     private String hashtag;
 
+    @Setter
+    private boolean isDeleted;
+
     @ToString.Exclude
     @OrderBy("id")
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)

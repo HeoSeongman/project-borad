@@ -11,7 +11,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @Entity
@@ -33,16 +35,25 @@ public class ArticleComment extends AuditingFields{
     @Column(nullable = false, length = 500)
     private String content;
 
+    @Setter
+    private boolean isDeleted;
+
+    @ToString.Exclude
+    @OrderBy("id")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "articleComment")
+    private final Set<ReplyComment> replyComments = new LinkedHashSet<>();
+
     protected ArticleComment() {}
 
-    private ArticleComment(Article article, UserAccount userAccount, String content) {
+    private ArticleComment(Article article, UserAccount userAccount, String content, boolean isDeleted) {
         this.article = article;
         this.userAccount = userAccount;
         this.content = content;
+        this.isDeleted = isDeleted;
     }
 
-    public static ArticleComment of(Article article, UserAccount userAccount, String content) {
-        return new ArticleComment(article, userAccount, content);
+    public static ArticleComment of(Article article, UserAccount userAccount, String content, boolean isDeleted) {
+        return new ArticleComment(article, userAccount, content, isDeleted);
     }
 
 

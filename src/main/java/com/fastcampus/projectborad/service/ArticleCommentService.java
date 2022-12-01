@@ -45,8 +45,11 @@ public class ArticleCommentService {
         articleCommentRepository.save(articleComment);
     }
 
-    public void deleteArticleComment(Long commentId, String userId) {
+    public void deleteArticleComment(Long commentId) {
 //        articleCommentRepository.deleteByIdAndUserAccount_UserId(commentId, userId);
-        articleCommentRepository.deleteById(commentId);
+        ArticleComment articleComment = articleCommentRepository.findById(commentId).orElseThrow();
+        articleComment.setDeleted(true);
+
+        articleCommentRepository.save(articleComment);
     }
 }

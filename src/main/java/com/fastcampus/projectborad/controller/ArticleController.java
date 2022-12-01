@@ -1,12 +1,10 @@
 package com.fastcampus.projectborad.controller;
 
-import com.fastcampus.projectborad.domain.Article;
 import com.fastcampus.projectborad.domain.typeEnum.FormStatus;
 import com.fastcampus.projectborad.domain.typeEnum.SearchType;
-import com.fastcampus.projectborad.dto.ArticleAndCommentsDtoResponse;
+import com.fastcampus.projectborad.dto.request.ArticleAndCommentsResponse;
 import com.fastcampus.projectborad.dto.ArticleDto;
 import com.fastcampus.projectborad.dto.ArticleDtoResponse;
-import com.fastcampus.projectborad.dto.UserAccountDto;
 import com.fastcampus.projectborad.dto.request.ArticleRequest;
 import com.fastcampus.projectborad.dto.request.ArticleResponse;
 import com.fastcampus.projectborad.dto.security.BoardPrincipal;
@@ -23,7 +21,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Slf4j
@@ -54,9 +51,9 @@ public class ArticleController {
 
     @GetMapping("/{articleId}")
     public String article(@PathVariable Long articleId, ModelMap map) {
-        ArticleAndCommentsDtoResponse articleAndCommentsDtoResponse = ArticleAndCommentsDtoResponse.from(articleService.searchArticleAndCommentDto(articleId));
-        map.addAttribute("article", articleAndCommentsDtoResponse);
-        map.addAttribute("articleComments", articleAndCommentsDtoResponse.articleCommentsDtoResponse());
+        ArticleAndCommentsResponse articleAndCommentsResponse = ArticleAndCommentsResponse.from(articleService.searchArticleAndCommentDto(articleId));
+        map.addAttribute("article", articleAndCommentsResponse);
+        map.addAttribute("articleComments", articleAndCommentsResponse.articleCommentsDtoResponse());
 
         return "articles/detail";
     }

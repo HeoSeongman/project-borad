@@ -1,5 +1,6 @@
 package com.fastcampus.projectborad.dto.request;
 
+import com.fastcampus.projectborad.domain.ArticleComment;
 import com.fastcampus.projectborad.dto.ArticleCommentDto;
 import com.fastcampus.projectborad.dto.UserAccountDto;
 

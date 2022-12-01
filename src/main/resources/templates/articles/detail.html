@@ -7,9 +7,40 @@
 <!--    <link href="/css/searchBar.css" rel="stylesheet">-->
     <title>게시판 페이지</title>
 
+
     <style>
         .padding {
             padding: 20px;
+            position: relative;
+        }
+
+        .inputTextarea {
+            height: 100px;
+        }
+
+        .postButtonsBottom {
+            display: flex;
+            justify-content: end;
+            margin-top: 10px
+        }
+
+        .postButtonsBottom > * {
+            margin-left: 10px;
+        }
+
+        .postButtonsRight {
+            position: absolute;
+            top: 0;
+            right: 0;
+            margin: 20px;
+        }
+
+        .postButtonsRight > * {
+            margin-left: 10px;
+        }
+
+        .CreatedAt {
+            font-size: 12px;
         }
 
         .container {
@@ -25,53 +56,16 @@
             display: flex;
         }
 
-        .container .blog-post .blog-post-content .postButtons {
-            display: flex;
-            justify-content: end;
-        }
-
-        .container .blog-post .blog-post-content .postButtons > * {
-            margin-left: 10px;
-        }
-
-        .container .blog-post-comment form {
-            display: flex;
-        }
-
-        .container .blog-post-comment .articleCommentArea {
-            flex-grow: 1;
-            height: 100px;
-        }
-
-        .container .blog-post-comment .postCommentButtons {
-            display: flex;
-            justify-content: end;
-            margin-top: 10px
-        }
-
-        .container .blog-post-comment .postCommentButtons > * {
-            margin-left: 10px;
-        }
-
-        .container .blog-post-comments .comment {
-            position: relative;
-            margin: 0;
-        }
-
-        .container .blog-post-comments .comment strong {
+        .container .blog-post-comments .commentCreatedBy {
+            font-weight: 700;
             font-size: 20px;
         }
 
-        .container .blog-post-comments .comment p {
-            margin: 10px auto 30px;
+        .container .blog-post-comments .replyButton {
+            text-decoration: none;
+            color: #999;
+            font-size: 14px
         }
-
-        .container .blog-post-comments .comment .commentDeleteButton {
-            position: absolute;
-            top: 0;
-            right: 0;
-        }
-
 
     </style>
 
@@ -93,7 +87,7 @@
 <!--                <div class="blog-post-content padding border-bottom" th:text="${article.content}">-->
                 <div class="blog-post-content padding border-bottom" th:inline="text">
                     [[${article.content}]]
-                    <div class="postButtons" th:if="${article.userAccountDto.userId} == ${#authentication.name}">
+                    <div class="postButtonsBottom" th:if="${article.userAccountDto.userId} == ${#authentication.name}">
                         <a class="btn btn-warning" th:href="@{/articles/{Id}/form(Id=${article.id})}">수정</a>
 <!--                        폼 제출 경로를 동적으로 변경되게 하고싶으면, 경로를 적은 후 끝에다 변수를 적어야하는 것 같다.-->
 <!--                        이걸로 계속 시도했다. <form th:action="@{/articles/{Id}(Id=${article.id})/delete}" method="post">-->
@@ -103,27 +97,39 @@
                     </div>
                 </div>
 
-                <div class="blog-post-comment padding">
-                    <form action="/comments/create" id="commentForm" method="post">
+                <div class="blog-post-comment padding border-bottom">
+<!--                    csrf 를 활성화한 후 post not supported 에러가 나왔다.-->
+<!--                    csrf 토큰을 넣어주었어야했다.-->
+                    <form th:action="@{/comments/create}" id="commentForm" method="post">
                         <label for="articleComment" hidden>댓글</label>
                         <input name="articleId" th:value="${article.id}" hidden/>
-                        <textarea class="articleCommentArea form-control" id="articleComment" name="content" placeholder="댓글을 입력하세요."></textarea>
+                        <textarea class="inputTextarea form-control" id="articleComment" name="content" placeholder="댓글을 입력하세요."></textarea>
                     </form>
-                    <div class="postCommentButtons">
+                    <div class="postButtonsBottom">
                         <a class="btn btn-primary" href="/articles">목록</a>
                         <button class="btn btn-outline-primary" type="submit" form="commentForm" sec:authorize="isAuthenticated()">쓰기</button>
                     </div>
                 </div>
 
-                <div class="blog-post-comments padding">
+                <div class="blog-post-comments">
                     <ul>
-                        <li th:each="comment : ${articleComments}" class="comment">
-                            <strong th:text="${comment.createdBy}"></strong>
+                        <li th:each="comment : ${articleComments}" class="padding border-bottom" th:id="${comment.id}">
+                            <p class="commentCreatedBy" th:text="${comment.createdBy}"></p>
                             <p th:text="${comment.content}"></p>
-                            <form th:action="@{/comments/{Id}/delete(Id=${comment.id})}" method="post" th:if="${comment.createdBy} == ${#authentication.name}">
+                            <p class="CreatedAt" th:text="${comment.createdAt}"></p>
+                            <a href="#" class="replyButton">답글쓰기</a>
+                            <form class="postButtonsRight" th:action="@{/comments/{Id}/delete(Id=${comment.id})}" method="post" th:if="${comment.createdBy} == ${#authentication.name}">
                                 <input th:value="${article.id}" name="articleId" hidden>
-                                <button class="commentDeleteButton btn btn-outline-danger" type="submit">삭제</button>
+                                <button class="btn btn-outline-danger" type="submit">삭제</button>
                             </form>
+
+                            <ul>
+                                <li th:each="reply : ${comment.replyComments}" class="padding">
+                                    <p th:text="${reply.createdBy}"></p>
+                                    <p th:text="${reply.content}"></p>
+                                    <p class="CreatedAt" th:text="${reply.createdAt}"></p>
+                                </li>
+                            </ul>
                         </li>
                     </ul>
                 </div>
@@ -341,4 +347,5 @@
     <footer th:replace="~{footer :: footer}"></footer>
 
 </body>
+<script src="/js/edit.js"></script>
 </html>
