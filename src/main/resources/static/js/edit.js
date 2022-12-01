@@ -65,6 +65,7 @@ Object.freeze(transformableType);
 
 // 취소 시 답글 요소 삭제
 replyCancel.addEventListener('click', (myself) => {
+    replyDiv.nextElementSibling.removeAttribute("hidden");
     replyTextarea.value = "";
     myself.target.parentNode.parentNode.parentNode.removeChild(replyDiv);
 })
@@ -109,6 +110,7 @@ for (let i = 0; i < replyButtons.length; i++) {
                         replyDiv, myself.target.parentNode.parentNode.getElementsByClassName("CommentReplyContent")[0]);
                 commentIdElem.value = replyDiv.parentNode.getAttribute("id");
                 replyTextarea.value = replyDiv.parentNode.getElementsByClassName("CommentReplyContent")[0].textContent;
+                replyDiv.nextElementSibling.setAttribute("hidden", "hidden");
                 break;
             case transformableType.Edit_Reply:
                 console.log("Edit_Reply");
@@ -116,6 +118,7 @@ for (let i = 0; i < replyButtons.length; i++) {
                         replyDiv, myself.target.parentNode.parentNode.getElementsByClassName("CommentReplyContent")[0]);
                 commentIdElem.value = replyDiv.parentNode.parentNode.parentNode.getAttribute("id");
                 replyTextarea.value = replyDiv.parentNode.getElementsByClassName("CommentReplyContent")[0].textContent;
+                replyDiv.nextElementSibling.setAttribute("hidden", "hidden");
                 break;
         };
     })
