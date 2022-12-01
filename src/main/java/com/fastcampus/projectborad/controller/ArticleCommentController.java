@@ -46,8 +46,9 @@ public class ArticleCommentController {
 
     @PostMapping("/replyDelete")
     public String deleteReplyComment(Long replyCommentId, Long articleId) {
+        System.out.println("replyCommentId : " + replyCommentId);
 
-        replyCommentService.deleteReplyComment(replyCommentId);
+//        replyCommentService.deleteReplyComment(replyCommentId);
 
         return "redirect:/articles/" + articleId;
     }
