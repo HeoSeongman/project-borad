@@ -25,9 +25,25 @@ replyCancel.textContent = "취소";
 // 답글 제출 버튼
 let replySubmit = document.createElement('button');
 replySubmit.setAttribute("class", "btn btn-outline-danger");
-replySubmit.setAttribute("type", "submit");
+replySubmit.setAttribute("type", "button");
 replySubmit.setAttribute("form", "replyForm");
 replySubmit.textContent = "쓰기";
+
+// 답글 제출 버튼 클릭 시 수정된 데이터 제출
+replySubmit.addEventListener('click', async (myself) => {
+    let submitData = {
+        replyId: replyDiv.parentNode.getAttribute("id"),
+        replyBody: {
+           articleId: document.getElementsByName('articleId')[0].value,
+           articleCommentId: replyDiv.parentNode.parentNode.parentNode.getAttribute("id"),
+           content: replyTextarea.value}
+    }
+    console.log(submitData);
+    let responseData = await sendUpdateData(submitData.replyId, submitData.replyBody);
+    console.log(responseData);
+    replyDiv.parentNode.getElementsByClassName("CommentReplyContent")[0].textContent = responseData.content;
+    closeTextarea(myself);
+})
 
 // commentId 요소
 let commentIdElem = document.createElement('input');
@@ -64,20 +80,31 @@ Object.freeze(transformableType);
 
 
 // 취소 시 답글 요소 삭제
+//replyCancel.addEventListener('click', (myself) => {
+//    replyDiv.nextElementSibling.removeAttribute("hidden");
+//    replyTextarea.value = "";
+//    myself.target.parentNode.parentNode.parentNode.removeChild(replyDiv);
+//})
+
 replyCancel.addEventListener('click', (myself) => {
+    closeTextarea(myself);
+});
+
+function closeTextarea(myself) {
     replyDiv.nextElementSibling.removeAttribute("hidden");
     replyTextarea.value = "";
     myself.target.parentNode.parentNode.parentNode.removeChild(replyDiv);
-})
-
-let replyButtons = document.getElementsByClassName('transformable');
+}
 
 
 
-// 답글쓰기 요소에 이벤트 추가
-for (let i = 0; i < replyButtons.length; i++) {
+// 수정 버튼들
+let editButtons = document.getElementsByClassName('edit-button');
+
+// 답글쓰기, 수정버튼 요소에 이벤트 추가
+for (let i = 0; i < editButtons.length; i++) {
 //    console.log(replyButtons[i]);
-    replyButtons[i].addEventListener('click', (myself) => {
+    editButtons[i].addEventListener('click', async (myself) => {
 //        myself.target.parentNode.parentNode.insertBefore(replyDiv, myself.target.parentNode.nextElementSibling);
 //        console.log(myself.target.parentNode.getAttribute('class').includes("ReplyItem"));
 
@@ -122,8 +149,24 @@ for (let i = 0; i < replyButtons.length; i++) {
                 commentIdElem.value = replyDiv.parentNode.parentNode.parentNode.getAttribute("id");
                 replyTextarea.value = replyDiv.parentNode.getElementsByClassName("CommentReplyContent")[0].textContent;
                 replyDiv.nextElementSibling.setAttribute("hidden", "hidden");
-                replyForm.setAttribute("action", "/comments/" + replyDiv.parentNode.getAttribute("id") + "/replyUpdate");
                 break;
         };
+
+//        console.log(responseData.content);
+//        closeTextarea(myself);
     })
+}
+
+// 데이터 제출
+async function sendUpdateData(replyId, bodyData) {
+    let promiseData = await fetch("/comments/" + replyId + "/replyUpdateJSON", {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+            "X-CSRF-Token": csrfToken.value
+        },
+        body: JSON.stringify(bodyData),
+    });
+    return promiseData.json();
+//    .then( (response) => console.log(response.json()) );
 }

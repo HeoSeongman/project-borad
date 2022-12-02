@@ -9,9 +9,13 @@ import com.fastcampus.projectborad.service.ArticleCommentService;
 import com.fastcampus.projectborad.service.ReplyCommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Objects;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -52,6 +56,7 @@ public class ArticleCommentController {
 
         return "redirect:/articles/" + replyCommentRequest.articleId();
     }
+
     @PostMapping("/{replyId}/replyUpdate")
     public String updateReplyComment(@PathVariable Long replyId, ReplyCommentRequest replyCommentRequest, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
         System.out.println("답글 수정 : " + replyCommentRequest.toString());
@@ -59,6 +64,15 @@ public class ArticleCommentController {
         replyCommentService.updateReplyComment(replyId, replyCommentRequest.toDto(boardPrincipal.toDto()));
 
         return "redirect:/articles/" + replyCommentRequest.articleId();
+    }
+    @ResponseBody
+    @PostMapping("/{replyId}/replyUpdateJSON")
+    public ResponseEntity<ReplyCommentRequest> updateReplyCommentJSON(@PathVariable Long replyId, @RequestBody ReplyCommentRequest replyCommentRequest, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
+        System.out.println("JSON 수신 : " + replyCommentRequest.toString());
+
+//        replyCommentService.updateReplyComment(replyId, replyCommentRequest.toDto(boardPrincipal.toDto()));
+
+        return ResponseEntity.ok(replyCommentRequest);
     }
 
     @PostMapping("/replyDelete")

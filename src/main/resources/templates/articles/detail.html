@@ -132,10 +132,10 @@
                             <p class="commentCreatedBy" th:text="${comment.createdBy}"></p>
                             <p class="CommentReplyContent" th:text="${comment.content}"></p>
                             <p class="CreatedAt" th:text="${comment.createdAt}"></p>
-                            <a href="javascript:void(0)" class="replyButton transformable" value="0">답글쓰기</a>
+                            <a href="javascript:void(0)" class="replyButton edit-button" value="0">답글쓰기</a>
                             <form class="postButtonsRight" th:action="@{/comments/{Id}/delete(Id=${comment.id})}" method="post" th:if="${comment.createdBy} == ${#authentication.name}">
                                 <input th:value="${article.id}" name="articleId" hidden>
-                                <button class="btn btn-warning transformable" type="button" value="2">수정</button>
+                                <button class="btn btn-warning edit-button" type="button" value="2">수정</button>
                                 <button class="btn btn-outline-danger" type="submit">삭제</button>
                             </form>
 
@@ -144,11 +144,11 @@
                                     <p th:text="${reply.createdBy}"></p>
                                     <p class="CommentReplyContent" th:text="${reply.content}"></p>
                                     <p class="CreatedAt" th:text="${reply.createdAt}"></p>
-                                    <a href="javascript:void(0)" class="replyButton transformable" value="1">답글쓰기</a>
+                                    <a href="javascript:void(0)" class="replyButton edit-button" value="1">답글쓰기</a>
                                     <form class="postButtonsRight" th:action="@{/comments/replyDelete}" method="post" th:if="${comment.createdBy} == ${#authentication.name}">
                                         <input th:value="${article.id}" name="articleId" hidden>
                                         <input th:value="${reply.id}" name="replyCommentId" hidden>
-                                        <button class="btn btn-warning transformable" type="button" value="3">수정</button>
+                                        <button class="btn btn-warning edit-button" type="button" value="3">수정</button>
                                         <button class="btn btn-outline-danger" type="submit">삭제</button>
                                     </form>
                                 </li>
