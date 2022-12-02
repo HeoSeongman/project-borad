@@ -98,11 +98,13 @@ for (let i = 0; i < replyButtons.length; i++) {
                 console.log("AddToFirst");
                 myself.target.parentNode.lastElementChild.insertBefore(replyDiv, myself.target.parentNode.lastElementChild.firstElementChild);
                 commentIdElem.value = replyDiv.parentNode.parentNode.getAttribute("id");
+                replyForm.setAttribute("action", "/comments/replyCreate");
                 break;
             case transformableType.Add_To_ThisNext:
                 console.log("AddToThisNext");
                 myself.target.parentNode.parentNode.insertBefore(replyDiv, myself.target.parentNode.nextElementSibling);
                 commentIdElem.value = replyDiv.parentNode.parentNode.getAttribute("id");
+                replyForm.setAttribute("action", "/comments/replyCreate")
                 break;
             case transformableType.Edit_Comment:
                 console.log("Edit_Comment");
@@ -111,6 +113,7 @@ for (let i = 0; i < replyButtons.length; i++) {
                 commentIdElem.value = replyDiv.parentNode.getAttribute("id");
                 replyTextarea.value = replyDiv.parentNode.getElementsByClassName("CommentReplyContent")[0].textContent;
                 replyDiv.nextElementSibling.setAttribute("hidden", "hidden");
+                replyForm.setAttribute("action", "/comments/" + replyDiv.parentNode.getAttribute("id") + "/update")
                 break;
             case transformableType.Edit_Reply:
                 console.log("Edit_Reply");
@@ -119,6 +122,7 @@ for (let i = 0; i < replyButtons.length; i++) {
                 commentIdElem.value = replyDiv.parentNode.parentNode.parentNode.getAttribute("id");
                 replyTextarea.value = replyDiv.parentNode.getElementsByClassName("CommentReplyContent")[0].textContent;
                 replyDiv.nextElementSibling.setAttribute("hidden", "hidden");
+                replyForm.setAttribute("action", "/comments/" + replyDiv.parentNode.getAttribute("id") + "/replyUpdate");
                 break;
         };
     })

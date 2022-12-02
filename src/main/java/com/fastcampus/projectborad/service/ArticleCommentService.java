@@ -4,15 +4,18 @@ import com.fastcampus.projectborad.domain.Article;
 import com.fastcampus.projectborad.domain.ArticleComment;
 import com.fastcampus.projectborad.domain.UserAccount;
 import com.fastcampus.projectborad.dto.ArticleCommentDto;
+import com.fastcampus.projectborad.dto.ReplyCommentDto;
 import com.fastcampus.projectborad.dto.request.ArticleCommentRequest;
 import com.fastcampus.projectborad.repository.ArticleCommentRepository;
 import com.fastcampus.projectborad.repository.ArticleRepository;
 import com.fastcampus.projectborad.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Transactional
 @RequiredArgsConstructor
 @Service
 public class ArticleCommentService {
@@ -43,6 +46,14 @@ public class ArticleCommentService {
 
         ArticleComment articleComment = articleCommentDto.toEntity(article, userAccount);
         articleCommentRepository.save(articleComment);
+    }
+
+    public void updateComment(Long commentId, ReplyCommentDto replyCommentDto) {
+        ArticleComment comment = articleCommentRepository.getReferenceById(commentId);
+
+        if (replyCommentDto.content() != null) {
+            comment.setContent(replyCommentDto.content());
+        }
     }
 
     public void deleteArticleComment(Long commentId) {

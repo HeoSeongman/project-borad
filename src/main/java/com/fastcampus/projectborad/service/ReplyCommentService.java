@@ -9,7 +9,9 @@ import com.fastcampus.projectborad.repository.ReplyCommentRepository;
 import com.fastcampus.projectborad.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @RequiredArgsConstructor
 @Service
 public class ReplyCommentService {
@@ -26,6 +28,14 @@ public class ReplyCommentService {
         ReplyComment replyComment = replyCommentDto.toEntity(articleComment, userAccount);
 
         replyCommentRepository.save(replyComment);
+    }
+
+    public void updateReplyComment(Long replyId ,ReplyCommentDto replyCommentDto) {
+        ReplyComment replyComment = replyCommentRepository.getReferenceById(replyId);
+
+        if (replyCommentDto.content() != null) {
+            replyComment.setContent(replyCommentDto.content());
+        }
     }
 
     public void deleteReplyComment(Long replyCommentId) {

@@ -140,7 +140,7 @@
                             </form>
 
                             <ul class="border-top">
-                                <li th:each="reply : ${comment.replyComments}" class="ReplyItem commentMargin border-bottom">
+                                <li th:each="reply : ${comment.replyComments}" class="ReplyItem commentMargin border-bottom" th:id="${reply.id}">
                                     <p th:text="${reply.createdBy}"></p>
                                     <p class="CommentReplyContent" th:text="${reply.content}"></p>
                                     <p class="CreatedAt" th:text="${reply.createdAt}"></p>
