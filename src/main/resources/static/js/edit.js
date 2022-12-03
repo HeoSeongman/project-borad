@@ -1,12 +1,6 @@
 // div 로 답글 요소 구분
 let replyDiv = document.createElement('div');
-replyDiv.setAttribute("class", "replyWriterMargin replyContainer")
-
-// form 요소 추가
-let replyForm = document.createElement('form');
-replyForm.setAttribute("action", "/comments/replyCreate")
-replyForm.setAttribute("method", "post");
-replyForm.setAttribute("id", "replyForm");
+replyDiv.setAttribute("class", "replyContainer")
 
 // text 요소 추가
 let replyTextarea = document.createElement('textarea');
@@ -24,146 +18,217 @@ replyCancel.textContent = "취소";
 
 // 답글 제출 버튼
 let replySubmit = document.createElement('button');
-replySubmit.setAttribute("class", "btn btn-outline-danger");
+replySubmit.setAttribute("class", "btn btn-outline-primary submitButton");
 replySubmit.setAttribute("type", "button");
-replySubmit.setAttribute("form", "replyForm");
 replySubmit.textContent = "쓰기";
-
-// 답글 제출 버튼 클릭 시 수정된 데이터 제출
-replySubmit.addEventListener('click', async (myself) => {
-    let submitData = {
-        replyId: replyDiv.parentNode.getAttribute("id"),
-        replyBody: {
-           articleId: document.getElementsByName('articleId')[0].value,
-           articleCommentId: replyDiv.parentNode.parentNode.parentNode.getAttribute("id"),
-           content: replyTextarea.value}
-    }
-    console.log(submitData);
-    let responseData = await sendUpdateData(submitData.replyId, submitData.replyBody);
-    console.log(responseData);
-    replyDiv.parentNode.getElementsByClassName("CommentReplyContent")[0].textContent = responseData.content;
-    closeTextarea(myself);
-})
-
-// commentId 요소
-let commentIdElem = document.createElement('input');
-commentIdElem.setAttribute("type", "hidden");
-commentIdElem.setAttribute("name", "articleCommentId");
-commentIdElem.setAttribute("value", -1);
-
-
-// csrf 토큰, articleId 복제
-let csrfToken = document.getElementsByName('_csrf')[0];
-let cloneCSRF = csrfToken.cloneNode();
-let articleId = document.getElementsByName('articleId')[0];
-let cloneArticleId = articleId.cloneNode();
-replyForm.appendChild(cloneCSRF);
-replyForm.appendChild(cloneArticleId);
-replyForm.appendChild(commentIdElem);
 
 // 답글 요소들 조립
 replyButtonsDiv.appendChild(replyCancel);
 replyButtonsDiv.appendChild(replySubmit);
-replyForm.appendChild(replyTextarea);
-replyDiv.appendChild(replyForm);
+replyDiv.appendChild(replyTextarea);
 replyDiv.appendChild(replyButtonsDiv);
 
+
 // 열거형 선언
-const transformableType = {
-    Add_To_FirstChild: 0,
-    Add_To_ThisNext: 1,
-    Edit_Comment: 2,
-    Edit_Reply: 3
+const ButtonType = {
+    CreateComment: 0,
+    CreateReply: 1,
+    UpdateComment: 2,
+    UpdateReply: 3
 };
 // 열거형 불변화
-Object.freeze(transformableType);
+Object.freeze(ButtonType);
 
 
-// 취소 시 답글 요소 삭제
-//replyCancel.addEventListener('click', (myself) => {
-//    replyDiv.nextElementSibling.removeAttribute("hidden");
-//    replyTextarea.value = "";
-//    myself.target.parentNode.parentNode.parentNode.removeChild(replyDiv);
-//})
+//let add-form-Element = document.createElement("form");
+//add-form-Element.setAttribute("class", "postButtonsRight");
+//add-form-Element.setAttribute("action", "/");
+//add-form-Element.setAttribute("method", "post");
 
-replyCancel.addEventListener('click', (myself) => {
-    closeTextarea(myself);
-});
 
-function closeTextarea(myself) {
-    replyDiv.nextElementSibling.removeAttribute("hidden");
-    replyTextarea.value = "";
-    myself.target.parentNode.parentNode.parentNode.removeChild(replyDiv);
+
+
+
+let requestData = {
+    requestButtonType: -1,
+    requestURL: "",
+    requestBody: {
+    }
+}
+
+function createAddElement(responseData) {
+    // 추가될 댓글 요소 구분
+    let add_ul_Element = document.createElement("ul");
+
+    let add_li_Element = document.createElement("li");
+
+    let add_createdBy = document.createElement("p");
+    add_createdBy.setAttribute("class", "commentCreatedBy");
+
+    let add_content = document.createElement("p");
+    add_content.setAttribute("class", "CommentReplyContent");
+
+    let add_createdAt = document.createElement("p");
+    add_createdAt.setAttribute("class", "CreatedAt");
+
+    let add_replyButton = document.createElement("a");
+    add_replyButton.setAttribute("href", "javascript:void(0)");
+    add_replyButton.setAttribute("class", "replyButton edit-button");
+    add_replyButton.setAttribute("value", "-1");
+
+    add_li_Element.appendChild(add_createdBy);
+    add_li_Element.appendChild(add_content);
+    add_li_Element.appendChild(add_createdAt);
+    add_li_Element.appendChild(add_replyButton);
+
+    if (requestData.requestButtonType === ButtonType.CreateComment) {
+        add_li_Element.setAttribute("class", "CommentItem border-bottom");
+        add_li_Element.setAttribute("id", responseData.id);
+
+        add_createdBy.textContent = responseData.createdBy;
+        add_content.textContent = responseData.content;
+        add_createdAt.textContent = responseData.createdAt;
+
+        add_ul_Element.appendChild(add_li_Element);
+        return add_ul_Element;
+    } else {
+        return add_li_Element;
+    }
+}
+
+
+function doAfterResponse(responseData) {
+    switch(requestData.requestButtonType) {
+        case ButtonType.CreateComment:
+            let createdElement = createAddElement(responseData);
+            document.getElementsByClassName("blog-post-comments")[0].appendChild(createdElement);
+            document.getElementById("articleComment").value = "";
+    }
+}
+
+
+function setRequestData() {
+    switch(requestData.requestButtonType) {
+        case ButtonType.CreateComment:
+            requestData.requestURL = "/createCommentJSON";
+            requestData.requestBody = {
+                articleId: document.getElementsByName('articleId')[0].value,
+                content: document.getElementById("articleComment").value
+            };
+            break;
+        case ButtonType.CreateReply:
+            requestData.requestURL = "/createReplyJSON";
+            requestData.requestBody = {
+                articleId: document.getElementsByName('articleId')[0].value,
+                articleCommentId: replyDiv.parentNode.firstElementChild.getAttribute("id"),
+                content: replyTextarea.value
+            };
+            break;
+        case ButtonType.UpdateComment:
+            requestData.requestURL = "/" + replyDiv.parentNode.getAttribute("id") + "/updateCommentJSON";
+            requestData.requestBody = {
+                articleId: document.getElementsByName('articleId')[0].value,
+                content: replyTextarea.value
+            };
+            break;
+        case ButtonType.UpdateReply:
+            requestData.requestURL = "/" + replyDiv.parentNode.getAttribute("id") + "/updateReplyJSON";
+            requestData.requestBody = {
+                articleId: document.getElementsByName('articleId')[0].value,
+                articleCommentId: replyDiv.parentNode.parentNode.firstElementChild.getAttribute("id"),
+                content: replyTextarea.value
+            };
+            break;
+    }
 }
 
 
 
-// 수정 버튼들
+// 취소시 답글 요소 삭제
+replyCancel.addEventListener('click', (myself) => {
+    closeTextarea();
+});
+
+// 답글 입력 요소 삭제
+function closeTextarea() {
+
+    if (replyDiv.nextElementSibling != null) {
+        replyDiv.nextElementSibling.removeAttribute("hidden");
+    }
+    if (replyDiv.parentElement != null) {
+        replyDiv.parentNode.removeChild(replyDiv);
+        replyTextarea.value = "";
+    }
+}
+
+
+// 버튼들 가져오기
 let editButtons = document.getElementsByClassName('edit-button');
 
 // 답글쓰기, 수정버튼 요소에 이벤트 추가
 for (let i = 0; i < editButtons.length; i++) {
 //    console.log(replyButtons[i]);
     editButtons[i].addEventListener('click', async (myself) => {
-//        myself.target.parentNode.parentNode.insertBefore(replyDiv, myself.target.parentNode.nextElementSibling);
-//        console.log(myself.target.parentNode.getAttribute('class').includes("ReplyItem"));
 
-//        if (myself.target.parentNode.getAttribute('class').includes("ReplyItem")) {
-//            myself.target.parentNode.parentNode.insertBefore(replyDiv, myself.target.parentNode.nextElementSibling);
-//        } else {
-//            myself.target.parentNode.lastElementChild.insertBefore(replyDiv, myself.target.parentNode.lastElementChild.firstElementChild);
-//        }
-//
-//        // 답글을 작성할 댓글 id 값 가져오기
-//        commentIdElem.value = replyDiv.parentNode.parentNode.getAttribute("id");
+        if (replyDiv.parentNode != null) {
+            closeTextarea();
+        }
 
-//        이거는 그냥 문자열이다.
-//        console.log(myself.target.getAttribute('value'));
+        requestData.requestButtonType = Number(myself.target.getAttribute('value'));
 
-        switch(Number(myself.target.getAttribute('value'))) {
-            case transformableType.Add_To_FirstChild:
-                console.log("AddToFirst");
-                myself.target.parentNode.lastElementChild.insertBefore(replyDiv, myself.target.parentNode.lastElementChild.firstElementChild);
-                commentIdElem.value = replyDiv.parentNode.parentNode.getAttribute("id");
-                replyForm.setAttribute("action", "/comments/replyCreate");
+        switch(requestData.requestButtonType) {
+            case ButtonType.CreateComment:
                 break;
-            case transformableType.Add_To_ThisNext:
-                console.log("AddToThisNext");
+            case ButtonType.CreateReply:
                 myself.target.parentNode.parentNode.insertBefore(replyDiv, myself.target.parentNode.nextElementSibling);
-                commentIdElem.value = replyDiv.parentNode.parentNode.getAttribute("id");
-                replyForm.setAttribute("action", "/comments/replyCreate")
                 break;
-            case transformableType.Edit_Comment:
-                console.log("Edit_Comment");
+            case ButtonType.UpdateComment:
                 myself.target.parentNode.parentNode.insertBefore(
                         replyDiv, myself.target.parentNode.parentNode.getElementsByClassName("CommentReplyContent")[0]);
-                commentIdElem.value = replyDiv.parentNode.getAttribute("id");
                 replyTextarea.value = replyDiv.parentNode.getElementsByClassName("CommentReplyContent")[0].textContent;
                 replyDiv.nextElementSibling.setAttribute("hidden", "hidden");
-                replyForm.setAttribute("action", "/comments/" + replyDiv.parentNode.getAttribute("id") + "/update")
                 break;
-            case transformableType.Edit_Reply:
-                console.log("Edit_Reply");
+            case ButtonType.UpdateReply:
                 myself.target.parentNode.parentNode.insertBefore(
                         replyDiv, myself.target.parentNode.parentNode.getElementsByClassName("CommentReplyContent")[0]);
-                commentIdElem.value = replyDiv.parentNode.parentNode.parentNode.getAttribute("id");
                 replyTextarea.value = replyDiv.parentNode.getElementsByClassName("CommentReplyContent")[0].textContent;
                 replyDiv.nextElementSibling.setAttribute("hidden", "hidden");
                 break;
         };
-
-//        console.log(responseData.content);
-//        closeTextarea(myself);
     })
 }
 
+let submitButtons = document.getElementsByClassName("submitButton");
+
+for (let i = 0; i < submitButtons.length; i++) {
+    // 답글 제출 버튼 클릭 시 수정된 데이터 제출
+    submitButtons[i].addEventListener('click', async (myself) => {
+
+        setRequestData();
+        let responseData = await postData(requestData.requestURL, requestData.requestBody);
+        console.log(responseData);
+
+//        replyDiv.parentNode.getElementsByClassName("CommentReplyContent")[0].textContent = responseData.content;
+//        closeTextarea();
+
+        if (requestData.requestButtonType === ButtonType.CreateComment) {
+            document.getElementById("articleComment").value = "";
+        } else {
+            closeTextarea();
+        }
+
+        doAfterResponse(responseData);
+    })
+}
+
+
 // 데이터 제출
-async function sendUpdateData(replyId, bodyData) {
-    let promiseData = await fetch("/comments/" + replyId + "/replyUpdateJSON", {
+async function postData(sendURL, bodyData) {
+    let promiseData = await fetch("/comments" + sendURL, {
         method: "POST",
         headers: {
             'Content-Type': 'application/json',
-            "X-CSRF-Token": csrfToken.value
+            "X-CSRF-Token": document.getElementsByName("_csrf")[0].value
         },
         body: JSON.stringify(bodyData),
     });

@@ -29,7 +29,7 @@ public class ArticleCommentService {
         return null;
     }
 
-    public void saveArticleComment(ArticleCommentDto articleCommentDto) {
+    public ArticleCommentDto saveArticleComment(ArticleCommentDto articleCommentDto) {
 
 //        UserAccount 엔티티에 public 혹은 protected 기본 생성자를 작성하지 않아서
 //        Private constructors don't work with runtime proxies! 비공개 생성자는 런타임 프록시에서 작동하지 않습니다! 오류가 났다.
@@ -43,16 +43,16 @@ public class ArticleCommentService {
 //        UserAccount userAccount = userAccountRepository.findById(articleCommentDto.userAccountDto().id()).orElseThrow();
 //        UserAccount userAccount = userAccountRepository.getReferenceById(articleCommentDto.userAccountDto().id());
 
+        ArticleComment savedArticleComment = articleCommentRepository.save(articleCommentDto.toEntity(article, userAccount));
 
-        ArticleComment articleComment = articleCommentDto.toEntity(article, userAccount);
-        articleCommentRepository.save(articleComment);
+        return ArticleCommentDto.from(savedArticleComment);
     }
 
-    public void updateComment(Long commentId, ReplyCommentDto replyCommentDto) {
+    public void updateComment(Long commentId, ArticleCommentDto articleCommentDto) {
         ArticleComment comment = articleCommentRepository.getReferenceById(commentId);
 
-        if (replyCommentDto.content() != null) {
-            comment.setContent(replyCommentDto.content());
+        if (articleCommentDto.content() != null) {
+            comment.setContent(articleCommentDto.content());
         }
     }
 

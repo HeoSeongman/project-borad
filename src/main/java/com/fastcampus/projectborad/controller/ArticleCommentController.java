@@ -1,7 +1,9 @@
 package com.fastcampus.projectborad.controller;
 
+import com.fastcampus.projectborad.dto.ArticleCommentDto;
 import com.fastcampus.projectborad.dto.ReplyCommentDto;
 import com.fastcampus.projectborad.dto.request.ArticleCommentRequest;
+import com.fastcampus.projectborad.dto.request.ArticleCommentResponse;
 import com.fastcampus.projectborad.dto.request.ReplyCommentRequest;
 import com.fastcampus.projectborad.dto.request.ReplyCommentResponse;
 import com.fastcampus.projectborad.dto.security.BoardPrincipal;
@@ -36,7 +38,7 @@ public class ArticleCommentController {
 
     @PostMapping("/{commentId}/update")
     public String updateComment(@PathVariable Long commentId , ReplyCommentRequest replyCommentRequest, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
-        articleCommentService.updateComment(commentId, replyCommentRequest.toDto(boardPrincipal.toDto()));
+//        articleCommentService.updateComment(commentId, replyCommentRequest.toDto(boardPrincipal.toDto()));
 
         return "redirect:/articles/" + replyCommentRequest.articleId();
     }
@@ -65,15 +67,6 @@ public class ArticleCommentController {
 
         return "redirect:/articles/" + replyCommentRequest.articleId();
     }
-    @ResponseBody
-    @PostMapping("/{replyId}/replyUpdateJSON")
-    public ResponseEntity<ReplyCommentRequest> updateReplyCommentJSON(@PathVariable Long replyId, @RequestBody ReplyCommentRequest replyCommentRequest, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
-        System.out.println("JSON 수신 : " + replyCommentRequest.toString());
-
-//        replyCommentService.updateReplyComment(replyId, replyCommentRequest.toDto(boardPrincipal.toDto()));
-
-        return ResponseEntity.ok(replyCommentRequest);
-    }
 
     @PostMapping("/replyDelete")
     public String deleteReplyComment(Long replyCommentId, Long articleId) {
@@ -84,4 +77,47 @@ public class ArticleCommentController {
         return "redirect:/articles/" + articleId;
     }
 
+
+
+    // 아래는 비동기 매핑
+
+    @ResponseBody
+    @PostMapping("/createCommentJSON")
+    public ResponseEntity<ArticleCommentResponse> createCommentJSON(@RequestBody ArticleCommentRequest articleCommentRequest, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
+        System.out.println("/createCommentJSON JSON 수신 : " + articleCommentRequest.toString());
+
+        ArticleCommentDto savedArticleCommentDto = articleCommentService.saveArticleComment(articleCommentRequest.toDto(boardPrincipal.toDto()));
+        ArticleCommentResponse articleCommentResponse = ArticleCommentResponse.from(savedArticleCommentDto);
+
+        return ResponseEntity.ok(articleCommentResponse);
+    }
+    @ResponseBody
+    @PostMapping("/{commentId}/updateCommentJSON")
+    public ResponseEntity<ArticleCommentRequest> updateCommentJSON(@PathVariable Long commentId, @RequestBody ArticleCommentRequest articleCommentRequest, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
+        System.out.println("/updateCommentJSON JSON 수신 : " + articleCommentRequest.toString());
+
+//        articleCommentService.updateComment(commentId, articleCommentRequest.toDto(boardPrincipal.toDto()));
+
+        return ResponseEntity.ok(articleCommentRequest);
+    }
+
+    @ResponseBody
+    @PostMapping("/createReplyJSON")
+    public ResponseEntity<ReplyCommentRequest> createReplyCommentJSON(@RequestBody ReplyCommentRequest replyCommentRequest, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
+        System.out.println("/replyCreateJSON JSON 수신 : " + replyCommentRequest.toString());
+
+//        replyCommentService.saveReplyComment(replyCommentRequest.toDto(boardPrincipal.toDto()));
+
+        return ResponseEntity.ok(replyCommentRequest);
+    }
+
+    @ResponseBody
+    @PostMapping("/{replyId}/updateReplyJSON")
+    public ResponseEntity<ReplyCommentRequest> updateReplyCommentJSON(@PathVariable Long replyId,@RequestBody ReplyCommentRequest replyCommentRequest, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
+        System.out.println("/replyUpdateJSON JSON 수신 : " + replyCommentRequest.toString() + ", Id : " + replyId);
+
+//        replyCommentService.updateReplyComment(replyId, replyCommentRequest.toDto(boardPrincipal.toDto()));
+
+        return ResponseEntity.ok(replyCommentRequest);
+    }
 }
