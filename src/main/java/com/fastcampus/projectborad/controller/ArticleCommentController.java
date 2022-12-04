@@ -91,24 +91,34 @@ public class ArticleCommentController {
 
         return ResponseEntity.ok(articleCommentResponse);
     }
+
     @ResponseBody
     @PostMapping("/{commentId}/updateCommentJSON")
     public ResponseEntity<ArticleCommentRequest> updateCommentJSON(@PathVariable Long commentId, @RequestBody ArticleCommentRequest articleCommentRequest, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
         System.out.println("/updateCommentJSON JSON 수신 : " + articleCommentRequest.toString());
 
-//        articleCommentService.updateComment(commentId, articleCommentRequest.toDto(boardPrincipal.toDto()));
+        articleCommentService.updateComment(commentId, articleCommentRequest.toDto(boardPrincipal.toDto()));
 
         return ResponseEntity.ok(articleCommentRequest);
+    }
+    @ResponseBody
+    @PostMapping("/deleteCommentJSON")
+    public ResponseEntity<Boolean> deleteCommentJSON(@RequestBody Long commentId, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
+        System.out.println("/deleteCommentJSON JSON 수신 : " + commentId);
+
+        articleCommentService.deleteArticleComment(commentId);
+
+        return ResponseEntity.ok(Boolean.TRUE);
     }
 
     @ResponseBody
     @PostMapping("/createReplyJSON")
-    public ResponseEntity<ReplyCommentRequest> createReplyCommentJSON(@RequestBody ReplyCommentRequest replyCommentRequest, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
+    public ResponseEntity<ReplyCommentResponse> createReplyCommentJSON(@RequestBody ReplyCommentRequest replyCommentRequest, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
         System.out.println("/replyCreateJSON JSON 수신 : " + replyCommentRequest.toString());
 
-//        replyCommentService.saveReplyComment(replyCommentRequest.toDto(boardPrincipal.toDto()));
+        ReplyCommentResponse replyCommentResponse = ReplyCommentResponse.from(replyCommentService.saveReplyComment(replyCommentRequest.toDto(boardPrincipal.toDto())));
 
-        return ResponseEntity.ok(replyCommentRequest);
+        return ResponseEntity.ok(replyCommentResponse);
     }
 
     @ResponseBody
@@ -116,8 +126,20 @@ public class ArticleCommentController {
     public ResponseEntity<ReplyCommentRequest> updateReplyCommentJSON(@PathVariable Long replyId,@RequestBody ReplyCommentRequest replyCommentRequest, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
         System.out.println("/replyUpdateJSON JSON 수신 : " + replyCommentRequest.toString() + ", Id : " + replyId);
 
-//        replyCommentService.updateReplyComment(replyId, replyCommentRequest.toDto(boardPrincipal.toDto()));
+        replyCommentService.updateReplyComment(replyId, replyCommentRequest.toDto(boardPrincipal.toDto()));
 
         return ResponseEntity.ok(replyCommentRequest);
     }
+
+    @ResponseBody
+    @PostMapping("/deleteReplyJSON")
+    public ResponseEntity<Boolean> deleteReplyCommentJSON(@RequestBody Long replyId, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
+        System.out.println("/deleteCommentJSON JSON 수신 : " + replyId);
+
+//        replyCommentService.deleteReplyComment(replyId);
+
+        return ResponseEntity.ok(Boolean.TRUE);
+    }
+
+
 }

@@ -7,6 +7,11 @@
 <!--    <link href="/css/searchBar.css" rel="stylesheet">-->
     <title>게시판 페이지</title>
 
+<!--    <sec:csrfMetaTags />-->
+<!--    <meta name="_csrf_header" sec:content="${_csrf.headerName}" />-->
+<!--    csrf 메타태그 추가-->
+    <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
+    <meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>
 
     <style>
         .padding {
@@ -100,7 +105,7 @@
 
     <header th:replace="header :: header">헤더</header>
 
-    <main class="container">
+    <main class="container" name="articleId" th:value="${article.id}">
         <header class="blog-post-title border-bottom">
             <h1 th:text="${article.title}">
                 첫 번째 글
@@ -116,9 +121,7 @@
                         <a class="btn btn-warning" th:href="@{/articles/{Id}/form(Id=${article.id})}">수정</a>
 <!--                        폼 제출 경로를 동적으로 변경되게 하고싶으면, 경로를 적은 후 끝에다 변수를 적어야하는 것 같다.-->
 <!--                        이걸로 계속 시도했다. <form th:action="@{/articles/{Id}(Id=${article.id})/delete}" method="post">-->
-                        <form th:action="@{/articles/{Id}/delete(Id=${article.id})}" method="post">
-                            <button class="btn btn-danger" type="submit">삭제</button>
-                        </form>
+                        <button class="btn btn-danger" type="submit">삭제</button>
                     </div>
                 </div>
 
@@ -137,7 +140,7 @@
                         <textarea class="inputTextarea form-control" id="articleComment" name="content" placeholder="댓글을 입력하세요."></textarea>
                         <div class="postButtonsBottom">
                             <a class="btn btn-primary" href="/articles">목록</a>
-                            <button class="btn btn-outline-primary edit-button submitButton" type="button" sec:authorize="isAuthenticated()" value="0">쓰기</button>
+                            <button class="btn btn-outline-primary edit-button" id="submitButton" type="button" sec:authorize="isAuthenticated()" value="0">쓰기</button>
                         </div>
                 </div>
 
@@ -148,23 +151,20 @@
                             <p class="CommentReplyContent" th:text="${comment.content}"></p>
                             <p class="CreatedAt" th:text="${comment.createdAt}"></p>
                             <a href="javascript:void(0)" class="replyButton edit-button" value="1">답글쓰기</a>
-                            <form class="postButtonsRight" th:action="@{/comments/{Id}/delete(Id=${comment.id})}" method="post" th:if="${comment.createdBy} == ${#authentication.name}">
-                                <input th:value="${article.id}" name="articleId" hidden>
+                            <div class="postButtonsRight" th:if="${comment.createdBy} == ${#authentication.name}">
                                 <button class="btn btn-warning edit-button" type="button" value="2">수정</button>
-                                <button class="btn btn-outline-danger" type="submit">삭제</button>
-                            </form>
+                                <button class="btn btn-outline-danger edit-button deleteButton" type="button" value="4">삭제</button>
+                            </div>
                         </li>
                         <li th:each="reply : ${comment.replyComments}" class="CommentItem ReplyItem border-bottom" th:id="${reply.id}">
                             <p th:text="${reply.createdBy}"></p>
                             <p class="CommentReplyContent" th:text="${reply.content}"></p>
                             <p class="CreatedAt" th:text="${reply.createdAt}"></p>
                             <a href="javascript:void(0)" class="replyButton edit-button" value="1">답글쓰기</a>
-                            <form class="postButtonsRight" th:action="@{/comments/replyDelete}" method="post" th:if="${comment.createdBy} == ${#authentication.name}">
-                                <input th:value="${article.id}" name="articleId" hidden>
-                                <input th:value="${reply.id}" name="replyCommentId" hidden>
+                            <div class="postButtonsRight" th:if="${comment.createdBy} == ${#authentication.name}">
                                 <button class="btn btn-warning edit-button" type="button" value="3">수정</button>
-                                <button class="btn btn-outline-danger" type="submit">삭제</button>
-                            </form>
+                                <button class="btn btn-outline-danger edit-button deleteButton" type="button" value="5">삭제</button>
+                            </div>
                         </li>
                     </ul>
                 </div>

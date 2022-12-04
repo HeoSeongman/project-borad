@@ -1,6 +1,7 @@
 package com.fastcampus.projectborad.dto.request;
 
 import com.fastcampus.projectborad.dto.ReplyCommentDto;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

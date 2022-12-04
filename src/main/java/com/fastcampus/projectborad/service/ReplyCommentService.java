@@ -20,14 +20,14 @@ public class ReplyCommentService {
     private final UserAccountRepository userAccountRepository;
     private final ReplyCommentRepository replyCommentRepository;
 
-    public void saveReplyComment(ReplyCommentDto replyCommentDto) {
+    public ReplyCommentDto saveReplyComment(ReplyCommentDto replyCommentDto) {
 
         ArticleComment articleComment = articleCommentRepository.getReferenceById(replyCommentDto.articleCommentId());
         UserAccount userAccount = userAccountRepository.getReferenceById(replyCommentDto.userAccount().userId());
 
-        ReplyComment replyComment = replyCommentDto.toEntity(articleComment, userAccount);
+        ReplyComment replyComment = replyCommentRepository.save(replyCommentDto.toEntity(articleComment, userAccount));
 
-        replyCommentRepository.save(replyComment);
+        return ReplyCommentDto.from(replyComment);
     }
 
     public void updateReplyComment(Long replyId ,ReplyCommentDto replyCommentDto) {

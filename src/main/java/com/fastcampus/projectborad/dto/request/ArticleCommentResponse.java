@@ -3,6 +3,7 @@ package com.fastcampus.projectborad.dto.request;
 import com.fastcampus.projectborad.domain.Article;
 import com.fastcampus.projectborad.domain.ArticleComment;
 import com.fastcampus.projectborad.dto.ArticleCommentDto;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
