@@ -90,7 +90,7 @@ function createAddElement(responseData) {
         return add_ul_Element;
 
     } else {
-        add_li_Element.setAttribute("class", "CommentItem ReplyItem border-bottom");
+        add_li_Element.setAttribute("class", "ReplyItem border-bottom");
 
         return add_li_Element;
     }

@@ -146,7 +146,10 @@
 
                 <div class="blog-post-comments padding">
                     <ul th:each="comment : ${articleComments}">
-                        <li class="CommentItem border-bottom" th:id="${comment.id}">
+                        <li th:if="${comment.isDeleted}" class="border-bottom">
+                            <p class="CommentReplyContent">삭제된 댓글입니다.</p>
+                        </li>
+                        <li th:unless="${comment.isDeleted}" class="CommentItem border-bottom" th:id="${comment.id}">
                             <p class="commentCreatedBy" th:text="${comment.createdBy}"></p>
                             <p class="CommentReplyContent" th:text="${comment.content}"></p>
                             <p class="CreatedAt" th:text="${comment.createdAt}"></p>
@@ -156,16 +159,21 @@
                                 <button class="btn btn-outline-danger edit-button deleteButton" type="button" value="4">삭제</button>
                             </div>
                         </li>
-                        <li th:each="reply : ${comment.replyComments}" class="CommentItem ReplyItem border-bottom" th:id="${reply.id}">
-                            <p th:text="${reply.createdBy}"></p>
-                            <p class="CommentReplyContent" th:text="${reply.content}"></p>
-                            <p class="CreatedAt" th:text="${reply.createdAt}"></p>
-                            <a href="javascript:void(0)" class="replyButton edit-button" value="1">답글쓰기</a>
-                            <div class="postButtonsRight" th:if="${comment.createdBy} == ${#authentication.name}">
-                                <button class="btn btn-warning edit-button" type="button" value="3">수정</button>
-                                <button class="btn btn-outline-danger edit-button deleteButton" type="button" value="5">삭제</button>
-                            </div>
-                        </li>
+                        <th:block th:each="reply : ${comment.replyComments}">
+                            <li th:if="${reply.isDeleted}" class="ReplyItem border-bottom">
+                                <p class="CommentReplyContent">삭제된 답글입니다.</p>
+                            </li>
+                            <li th:unless="${reply.isDeleted}" class="ReplyItem border-bottom" th:id="${reply.id}">
+                                <p th:text="${reply.createdBy}"></p>
+                                <p class="CommentReplyContent" th:text="${reply.content}"></p>
+                                <p class="CreatedAt" th:text="${reply.createdAt}"></p>
+                                <a href="javascript:void(0)" class="replyButton edit-button" value="1">답글쓰기</a>
+                                <div class="postButtonsRight" th:if="${comment.createdBy} == ${#authentication.name}">
+                                    <button class="btn btn-warning edit-button" type="button" value="3">수정</button>
+                                    <button class="btn btn-outline-danger edit-button deleteButton" type="button" value="5">삭제</button>
+                                </div>
+                            </li>
+                        </th:block>
                     </ul>
                 </div>
             </section>

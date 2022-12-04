@@ -136,7 +136,7 @@ public class ArticleCommentController {
     public ResponseEntity<Boolean> deleteReplyCommentJSON(@RequestBody Long replyId, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
         System.out.println("/deleteCommentJSON JSON 수신 : " + replyId);
 
-//        replyCommentService.deleteReplyComment(replyId);
+        replyCommentService.deleteReplyComment(replyId);
 
         return ResponseEntity.ok(Boolean.TRUE);
     }
