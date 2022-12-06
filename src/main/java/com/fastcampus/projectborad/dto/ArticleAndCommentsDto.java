@@ -6,6 +6,7 @@ import com.fastcampus.projectborad.domain.UserAccount;
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,14 +27,15 @@ public record ArticleAndCommentsDto(
         return new ArticleAndCommentsDto(id, userAccountDto, title, content, hashtag, articleCommentDtos, createdAt, createdBy, modifiedAt, modifiedBy);
     }
 
-    public static ArticleAndCommentsDto from(Article article) {
+    public static ArticleAndCommentsDto from(Article article, List<ArticleComment> articleComments) {
         return new ArticleAndCommentsDto(
             article.getId(),
             UserAccountDto.from(article.getUserAccount()),
                 article.getTitle(),
                 article.getContent(),
                 article.getHashtag(),
-                article.getArticleComments().stream().map(ArticleCommentDto::from)
+                articleComments.stream()
+                        .map(ArticleCommentDto::from)
                         .collect(Collectors.toCollection(LinkedHashSet::new)),
                 article.getCreatedAt(),
                 article.getCreatedBy(),

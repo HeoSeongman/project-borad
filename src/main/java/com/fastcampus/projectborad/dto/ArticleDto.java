@@ -15,7 +15,16 @@ import java.util.stream.Collectors;
 /**
  * A DTO for the {@link com.fastcampus.projectborad.domain.Article} entity
  */
-public record ArticleDto(LocalDateTime createdAt, String createdBy, Long id, String title, UserAccountDto userAccountDto, String content, String hashtag) implements Serializable {
+public record ArticleDto(
+        LocalDateTime createdAt,
+        String createdBy,
+        Long id,
+        String title,
+        UserAccountDto userAccountDto,
+        String content,
+        String hashtag
+
+) implements Serializable {
 
     public static ArticleDto of(LocalDateTime createdAt, String createdBy, Long id, String title, UserAccountDto userAccountDto, String content, String hashtag) {
         return new ArticleDto(createdAt, createdBy, id, title, userAccountDto, content, hashtag);

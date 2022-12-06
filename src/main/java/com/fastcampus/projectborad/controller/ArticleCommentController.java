@@ -1,23 +1,20 @@
 package com.fastcampus.projectborad.controller;
 
 import com.fastcampus.projectborad.dto.ArticleCommentDto;
-import com.fastcampus.projectborad.dto.ReplyCommentDto;
 import com.fastcampus.projectborad.dto.request.ArticleCommentRequest;
-import com.fastcampus.projectborad.dto.request.ArticleCommentResponse;
+import com.fastcampus.projectborad.dto.response.ArticleCommentResponse;
 import com.fastcampus.projectborad.dto.request.ReplyCommentRequest;
-import com.fastcampus.projectborad.dto.request.ReplyCommentResponse;
+import com.fastcampus.projectborad.dto.response.ReplyCommentResponse;
 import com.fastcampus.projectborad.dto.security.BoardPrincipal;
 import com.fastcampus.projectborad.service.ArticleCommentService;
 import com.fastcampus.projectborad.service.ReplyCommentService;
+import com.sun.istack.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Objects;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -31,7 +28,7 @@ public class ArticleCommentController {
     @PostMapping("/create")
     public String createComment(ArticleCommentRequest articleCommentRequest, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
 
-        articleCommentService.saveArticleComment(articleCommentRequest.toDto(boardPrincipal.toDto()));
+//        articleCommentService.saveArticleComment(articleCommentRequest.toDto(boardPrincipal.toDto()));
 
         return "redirect:/articles/" + articleCommentRequest.articleId();
     }
@@ -82,27 +79,28 @@ public class ArticleCommentController {
     // 아래는 비동기 매핑
 
     @ResponseBody
-    @PostMapping("/createCommentJSON")
+    @PostMapping("/createComment")
     public ResponseEntity<ArticleCommentResponse> createCommentJSON(@RequestBody ArticleCommentRequest articleCommentRequest, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
         System.out.println("/createCommentJSON JSON 수신 : " + articleCommentRequest.toString());
 
-        ArticleCommentDto savedArticleCommentDto = articleCommentService.saveArticleComment(articleCommentRequest.toDto(boardPrincipal.toDto()));
+        ArticleCommentDto savedArticleCommentDto = articleCommentService.saveArticleComment(articleCommentRequest.toDto(boardPrincipal.toDto()), articleCommentRequest.parentCommentId());
         ArticleCommentResponse articleCommentResponse = ArticleCommentResponse.from(savedArticleCommentDto);
 
         return ResponseEntity.ok(articleCommentResponse);
     }
 
     @ResponseBody
-    @PostMapping("/{commentId}/updateCommentJSON")
-    public ResponseEntity<ArticleCommentRequest> updateCommentJSON(@PathVariable Long commentId, @RequestBody ArticleCommentRequest articleCommentRequest, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
+    @PostMapping("/updateComment")
+    public ResponseEntity<ArticleCommentRequest> updateCommentJSON(@RequestBody ArticleCommentRequest articleCommentRequest, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
         System.out.println("/updateCommentJSON JSON 수신 : " + articleCommentRequest.toString());
 
-        articleCommentService.updateComment(commentId, articleCommentRequest.toDto(boardPrincipal.toDto()));
+        articleCommentService.updateComment(articleCommentRequest.commentId(), articleCommentRequest.toDto(boardPrincipal.toDto()));
 
         return ResponseEntity.ok(articleCommentRequest);
     }
+
     @ResponseBody
-    @PostMapping("/deleteCommentJSON")
+    @PostMapping("/deleteComment")
     public ResponseEntity<Boolean> deleteCommentJSON(@RequestBody Long commentId, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
         System.out.println("/deleteCommentJSON JSON 수신 : " + commentId);
 
@@ -111,6 +109,11 @@ public class ArticleCommentController {
         return ResponseEntity.ok(Boolean.TRUE);
     }
 
+
+
+
+
+    // 사욯 안함
     @ResponseBody
     @PostMapping("/createReplyJSON")
     public ResponseEntity<ReplyCommentResponse> createReplyCommentJSON(@RequestBody ReplyCommentRequest replyCommentRequest, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {

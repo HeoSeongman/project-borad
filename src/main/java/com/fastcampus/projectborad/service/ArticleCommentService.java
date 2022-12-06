@@ -6,6 +6,7 @@ import com.fastcampus.projectborad.domain.UserAccount;
 import com.fastcampus.projectborad.dto.ArticleCommentDto;
 import com.fastcampus.projectborad.dto.ReplyCommentDto;
 import com.fastcampus.projectborad.dto.request.ArticleCommentRequest;
+import com.fastcampus.projectborad.dto.response.ArticleCommentResponse;
 import com.fastcampus.projectborad.repository.ArticleCommentRepository;
 import com.fastcampus.projectborad.repository.ArticleRepository;
 import com.fastcampus.projectborad.repository.UserAccountRepository;
@@ -13,7 +14,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Transactional
 @RequiredArgsConstructor
@@ -24,12 +28,15 @@ public class ArticleCommentService {
     private final ArticleRepository articleRepository;
     private final UserAccountRepository userAccountRepository;
 
-    public List<ArticleCommentDto> searchArticleComment(Long articleID) {
-//        return articleCommentRepository
-        return null;
+    public Set<ArticleCommentResponse> searchArticleComment(Long articleID) {
+
+        return articleCommentRepository.findByArticleIdOrderByRootCommentId(articleID).stream()
+                .map(ArticleCommentDto::from)
+                .map(ArticleCommentResponse::from)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    public ArticleCommentDto saveArticleComment(ArticleCommentDto articleCommentDto) {
+    public ArticleCommentDto saveArticleComment(ArticleCommentDto articleCommentDto, Long parentCommentId) {
 
 //        UserAccount 엔티티에 public 혹은 protected 기본 생성자를 작성하지 않아서
 //        Private constructors don't work with runtime proxies! 비공개 생성자는 런타임 프록시에서 작동하지 않습니다! 오류가 났다.
@@ -44,6 +51,15 @@ public class ArticleCommentService {
 //        UserAccount userAccount = userAccountRepository.getReferenceById(articleCommentDto.userAccountDto().id());
 
         ArticleComment savedArticleComment = articleCommentRepository.save(articleCommentDto.toEntity(article, userAccount));
+
+        if (parentCommentId == 0) {
+            savedArticleComment.setRootCommentId(savedArticleComment.getId());
+        } else {
+            ArticleComment parentArticleComment = articleCommentRepository.findById(parentCommentId).orElseThrow();
+            savedArticleComment.setRootCommentId(parentArticleComment.getRootCommentId());
+        }
+
+        savedArticleComment.setParentCommentId(parentCommentId);
 
         return ArticleCommentDto.from(savedArticleComment);
     }

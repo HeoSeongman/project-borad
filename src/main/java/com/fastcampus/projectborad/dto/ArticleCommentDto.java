@@ -3,6 +3,7 @@ package com.fastcampus.projectborad.dto;
 import com.fastcampus.projectborad.domain.Article;
 import com.fastcampus.projectborad.domain.ArticleComment;
 import com.fastcampus.projectborad.domain.UserAccount;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -19,7 +20,8 @@ public record ArticleCommentDto(
         UserAccountDto userAccountDto,
         String content,
         boolean isDeleted,
-        Set<ReplyCommentDto> replyCommentDtos,
+        Long rootCommentId,
+        Long parentCommentId,
         LocalDateTime createdAt,
         String createdBy,
         LocalDateTime modifiedAt,
@@ -27,12 +29,12 @@ public record ArticleCommentDto(
 
 ) implements Serializable {
 
-    public static ArticleCommentDto of(Long id, Long articleId, UserAccountDto userAccountDto, String content, boolean isDeleted, Set<ReplyCommentDto> replyCommentDtos, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
-        return new ArticleCommentDto(id, articleId, userAccountDto, content, isDeleted, replyCommentDtos, createdAt, createdBy, modifiedAt, modifiedBy);
+    public static ArticleCommentDto of(Long id, Long articleId, UserAccountDto userAccountDto, String content, boolean isDeleted, Long rootCommentId, Long parentCommentId, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
+        return new ArticleCommentDto(id, articleId, userAccountDto, content, isDeleted, rootCommentId, parentCommentId, createdAt, createdBy, modifiedAt, modifiedBy);
     }
 
     public static ArticleCommentDto of(Long articleId, UserAccountDto userAccountDto, String content) {
-        return new ArticleCommentDto(null, articleId, userAccountDto, content, false, null, null, null, null, null);
+        return new ArticleCommentDto(null, articleId, userAccountDto, content, false, null, null, null, null, null, null);
     }
 
     public static ArticleCommentDto from(ArticleComment articleComment) {
@@ -42,9 +44,8 @@ public record ArticleCommentDto(
                 UserAccountDto.from(articleComment.getUserAccount()),
                 articleComment.getContent(),
                 articleComment.isDeleted(),
-                articleComment.getReplyComments().stream()
-                        .map(ReplyCommentDto::from)
-                        .collect(Collectors.toCollection(LinkedHashSet::new)),
+                articleComment.getRootCommentId(),
+                articleComment.getParentCommentId(),
                 articleComment.getCreatedAt(),
                 articleComment.getCreatedBy(),
                 articleComment.getModifiedAt(),
@@ -57,7 +58,9 @@ public record ArticleCommentDto(
                 article,
                 userAccount,
                 content,
-                isDeleted
+                isDeleted,
+                rootCommentId,
+                parentCommentId
         );
     }
 }

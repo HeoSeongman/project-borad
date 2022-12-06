@@ -7,6 +7,7 @@ import com.fastcampus.projectborad.dto.ArticleAndCommentsDto;
 import com.fastcampus.projectborad.dto.ArticleDto;
 import com.fastcampus.projectborad.dto.ArticleUpdateDto;
 import com.fastcampus.projectborad.dto.UserAccountDto;
+import com.fastcampus.projectborad.repository.ArticleCommentRepository;
 import com.fastcampus.projectborad.repository.ArticleRepository;
 import com.fastcampus.projectborad.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ import java.util.List;
 public class ArticleService {
     private final ArticleRepository articleRepository;
     private final UserAccountRepository userAccountRepository;
+    private final ArticleCommentRepository articleCommentRepository;
 
     @Transactional(readOnly = true)
     public Page<ArticleDto> searchArticles(SearchType title, String search_keyword) {
@@ -58,10 +60,13 @@ public class ArticleService {
 
     @Transactional(readOnly = true)
     public ArticleAndCommentsDto searchArticleAndCommentDto(Long articleId) {
-        return ArticleAndCommentsDto.from(articleRepository.findById(articleId).get());
+        return ArticleAndCommentsDto.from(
+                articleRepository.findById(articleId).get(),
+                articleCommentRepository.findByArticleIdOrderByRootCommentId(articleId));
     }
 
     public Long saveArticle(ArticleDto articleDto) {
+
         Article article = articleRepository.save(articleDto.toEntity());
         return article.getId();
     }

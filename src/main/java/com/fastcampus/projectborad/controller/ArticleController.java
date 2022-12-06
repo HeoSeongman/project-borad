@@ -2,12 +2,15 @@ package com.fastcampus.projectborad.controller;
 
 import com.fastcampus.projectborad.domain.typeEnum.FormStatus;
 import com.fastcampus.projectborad.domain.typeEnum.SearchType;
-import com.fastcampus.projectborad.dto.request.ArticleAndCommentsResponse;
+import com.fastcampus.projectborad.dto.ArticleCommentDto;
+import com.fastcampus.projectborad.dto.response.ArticleAndCommentsResponse;
 import com.fastcampus.projectborad.dto.ArticleDto;
-import com.fastcampus.projectborad.dto.ArticleDtoResponse;
+import com.fastcampus.projectborad.dto.response.ArticleCommentResponse;
+import com.fastcampus.projectborad.dto.response.ArticleResponse;
 import com.fastcampus.projectborad.dto.request.ArticleRequest;
-import com.fastcampus.projectborad.dto.request.ArticleResponse;
+import com.fastcampus.projectborad.dto.response.ArticleFormResponse;
 import com.fastcampus.projectborad.dto.security.BoardPrincipal;
+import com.fastcampus.projectborad.service.ArticleCommentService;
 import com.fastcampus.projectborad.service.ArticleService;
 import com.fastcampus.projectborad.service.PaginationService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +25,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -30,6 +35,7 @@ import java.util.List;
 public class ArticleController {
 
     private final ArticleService articleService;
+    private final ArticleCommentService articleCommentService;
     private final PaginationService paginationService;
 
     @GetMapping
@@ -39,7 +45,7 @@ public class ArticleController {
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             ModelMap map) {
 
-        Page<ArticleDtoResponse> articles = articleService.searchArticles(searchType, searchValue, pageable).map(ArticleDtoResponse::from);
+        Page<ArticleResponse> articles = articleService.searchArticles(searchType, searchValue, pageable).map(ArticleResponse::from);
         List<Integer> barNumbers = paginationService.getPaginationBarNumber(pageable.getPageNumber(), articles.getTotalPages());
 
         map.addAttribute("articles", articles);
@@ -51,9 +57,12 @@ public class ArticleController {
 
     @GetMapping("/{articleId}")
     public String article(@PathVariable Long articleId, ModelMap map) {
-        ArticleAndCommentsResponse articleAndCommentsResponse = ArticleAndCommentsResponse.from(articleService.searchArticleAndCommentDto(articleId));
-        map.addAttribute("article", articleAndCommentsResponse);
-        map.addAttribute("articleComments", articleAndCommentsResponse.articleCommentsDtoResponse());
+        ArticleResponse articleResponse = ArticleResponse.from(articleService.searchArticle(articleId));
+        Set<ArticleCommentResponse> articleCommentResponses = articleCommentService.searchArticleComment(articleId);
+
+//        ArticleAndCommentsResponse articleAndCommentsResponse = ArticleAndCommentsResponse.from(articleService.searchArticleAndCommentDto(articleId));
+        map.addAttribute("article", articleResponse);
+        map.addAttribute("articleComments", articleCommentResponses);
 
         return "articles/detail";
     }
@@ -75,7 +84,7 @@ public class ArticleController {
             return "redirect:/articles/" + articleId;
         }
 
-        ArticleResponse articleResponse = ArticleResponse.from(articleDto);
+        ArticleFormResponse articleResponse = ArticleFormResponse.from(articleDto);
 
         map.addAttribute("article", articleResponse);
         map.addAttribute("formStatus", FormStatus.UPDATE);

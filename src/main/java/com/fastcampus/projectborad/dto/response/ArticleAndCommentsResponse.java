@@ -1,4 +1,4 @@
-package com.fastcampus.projectborad.dto.request;
+package com.fastcampus.projectborad.dto.response;
 
 import com.fastcampus.projectborad.dto.ArticleAndCommentsDto;
 import com.fastcampus.projectborad.dto.UserAccountDto;
@@ -14,12 +14,12 @@ public record ArticleAndCommentsResponse(
         String title,
         String content,
         String hashtag,
-        Set<ArticleCommentResponse> articleCommentsDtoResponse,
+        Set<ArticleCommentResponse> articleCommentResponses,
         LocalDateTime createdAt
 ) {
 
-    public static ArticleAndCommentsResponse of(Long id, UserAccountDto userAccountDto, String title, String content, String hashtag, Set<ArticleCommentResponse> articleCommentDtos, LocalDateTime createdAt) {
-        return new ArticleAndCommentsResponse(id, userAccountDto, title, content, hashtag, articleCommentDtos, createdAt);
+    public static ArticleAndCommentsResponse of(Long id, UserAccountDto userAccountDto, String title, String content, String hashtag, Set<ArticleCommentResponse> articleCommentResponses, LocalDateTime createdAt) {
+        return new ArticleAndCommentsResponse(id, userAccountDto, title, content, hashtag, articleCommentResponses, createdAt);
     }
 
     public static ArticleAndCommentsResponse from(ArticleAndCommentsDto articleAndCommentsDto) {

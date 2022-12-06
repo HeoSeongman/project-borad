@@ -1,4 +1,4 @@
-package com.fastcampus.projectborad.dto.request;
+package com.fastcampus.projectborad.dto.response;
 
 import com.fastcampus.projectborad.domain.Article;
 import com.fastcampus.projectborad.dto.ArticleDto;
@@ -9,7 +9,7 @@ import java.io.Serializable;
 /**
  * A DTO for the {@link Article} entity
  */
-public record ArticleResponse(
+public record ArticleFormResponse(
         Long id,
         String title,
         String content,
@@ -17,12 +17,12 @@ public record ArticleResponse(
 
 ) implements Serializable {
 
-    public static ArticleResponse of(Long id, String title, String content, String hashtag) {
-        return new ArticleResponse(id, title, content, hashtag);
+    public static ArticleFormResponse of(Long id, String title, String content, String hashtag) {
+        return new ArticleFormResponse(id, title, content, hashtag);
     }
 
-    public static ArticleResponse from(ArticleDto articleDto) {
-        return ArticleResponse.of(
+    public static ArticleFormResponse from(ArticleDto articleDto) {
+        return ArticleFormResponse.of(
                 articleDto.id(),
                 articleDto.title(),
                 articleDto.content(),

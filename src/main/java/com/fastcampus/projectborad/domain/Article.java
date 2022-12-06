@@ -44,10 +44,10 @@ public class Article extends AuditingFields{
     @Setter
     private boolean isDeleted;
 
-    @ToString.Exclude
-    @OrderBy("id")
-    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
-    private final Set<ArticleComment> articleComments = new LinkedHashSet<>();
+//    @ToString.Exclude
+//    @OrderBy("id")
+//    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
+//    private final Set<ArticleComment> articleComments = new LinkedHashSet<>();
 
     protected Article() {
 

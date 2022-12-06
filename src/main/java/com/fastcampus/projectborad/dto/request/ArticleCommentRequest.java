@@ -11,12 +11,14 @@ import java.io.Serializable;
  */
 public record ArticleCommentRequest(
         Long articleId,
-        String content
+        String content,
+        Long parentCommentId,
+        Long commentId
 
 ) implements Serializable {
 
-    public static ArticleCommentRequest of(Long articleId, String content) {
-        return new ArticleCommentRequest(articleId, content);
+    public static ArticleCommentRequest of(Long articleId, String content, Long parentCommentId, Long commentId) {
+        return new ArticleCommentRequest(articleId, content, parentCommentId, commentId);
     }
 
     public ArticleCommentDto toDto(UserAccountDto userAccountDto) {

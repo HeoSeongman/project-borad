@@ -8,6 +8,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -38,6 +39,13 @@ public class ArticleComment extends AuditingFields{
     @Setter
     private boolean isDeleted;
 
+    @Setter
+    private Long rootCommentId;
+
+    @Setter
+    private Long parentCommentId;
+
+
     @ToString.Exclude
     @OrderBy("id")
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "articleComment")
@@ -45,15 +53,17 @@ public class ArticleComment extends AuditingFields{
 
     protected ArticleComment() {}
 
-    private ArticleComment(Article article, UserAccount userAccount, String content, boolean isDeleted) {
+    private ArticleComment(Article article, UserAccount userAccount, String content, boolean isDeleted, Long rootCommentId, Long parentCommentId) {
         this.article = article;
         this.userAccount = userAccount;
         this.content = content;
         this.isDeleted = isDeleted;
+        this.rootCommentId = rootCommentId;
+        this.parentCommentId = parentCommentId;
     }
 
-    public static ArticleComment of(Article article, UserAccount userAccount, String content, boolean isDeleted) {
-        return new ArticleComment(article, userAccount, content, isDeleted);
+    public static ArticleComment of(Article article, UserAccount userAccount, String content, boolean isDeleted, Long rootCommentId, Long parentCommentId) {
+        return new ArticleComment(article, userAccount, content, isDeleted, rootCommentId, parentCommentId);
     }
 
 

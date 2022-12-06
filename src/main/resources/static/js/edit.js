@@ -1,258 +1,252 @@
-// div 로 답글 요소 구분
-let replyDiv = document.createElement('div');
-replyDiv.setAttribute("class", "replyContainer")
+// 댓글 쓰기 영역 구분
+let ReplyWriterItem = document.createElement('div');
+ReplyWriterItem.setAttribute("class", "ReplyWriter")
 
 // text 요소 추가
-let replyTextarea = document.createElement('textarea');
-replyTextarea.setAttribute("class", "inputTextarea form-control");
-replyTextarea.setAttribute("name", "content");
+let ReplyWriterTextarea = document.createElement('textarea');
+ReplyWriterTextarea.setAttribute("class", "inputTextarea form-control");
+ReplyWriterTextarea.setAttribute("name", "content");
 
 // 답글 버튼 요소 구분
-let replyButtonsDiv = document.createElement('div');
-replyButtonsDiv.setAttribute("class", "postButtonsBottom");
+let ReplyWriterButtons = document.createElement('div');
+ReplyWriterButtons.setAttribute("class", "postButtonsBottom");
 
 // 답글 취소 버튼
-let replyCancel = document.createElement('a');
-replyCancel.setAttribute("class", "btn btn-primary");
-replyCancel.textContent = "취소";
+let ReplyWriterCancel = document.createElement('a');
+ReplyWriterCancel.setAttribute("class", "btn btn-primary");
+ReplyWriterCancel.textContent = "취소";
+// 취소 버튼 이벤트
+ReplyWriterCancel.addEventListener('click', () => {
+    if (ReplyWriterItem.parentElement != null) {
+        ReplyWriterItem.parentElement.removeChild(ReplyWriterItem);
+        ReplyWriterTextarea.value = "";
+    }
+});
+// 답글쓰기 버튼 이벤트
+[...document.getElementsByClassName("CommentWriteButton")].forEach( (button) => {
+    writeButtonEvent(button);
+});
+
+function writeButtonEvent(button) {
+    button.addEventListener("click", (myself) => {
+        ReplyWriterCancel.click();
+        myself.target.parentElement.parentElement.insertBefore(ReplyWriterItem, myself.target.parentElement.nextElementSibling);
+    });
+}
 
 // 답글 제출 버튼
-let replySubmit = document.createElement('button');
-replySubmit.setAttribute("class", "btn btn-outline-primary");
-replySubmit.setAttribute("type", "button");
-replySubmit.textContent = "쓰기";
+let ReplyWriterSubmit = document.createElement('button');
+ReplyWriterSubmit.setAttribute("class", "btn btn-outline-primary");
+ReplyWriterSubmit.setAttribute("type", "button");
+ReplyWriterSubmit.textContent = "쓰기";
+// 답글 제출
+ReplyWriterSubmit.addEventListener("click", async () => {
+    setRequestData("/createComment", {
+                    articleId: document.getElementById("articleId").getAttribute("value"),
+                    content: ReplyWriterTextarea.value,
+                    parentCommentId: ReplyWriterItem.previousElementSibling.getAttribute("id"),
+                    commentId: 0
+        }
+    );
+    if (!checkContent(ReplyWriterTextarea)) return;
+
+    let responseData = await postData();
+    console.log(responseData);
+
+    createAddComment(responseData);
+    ReplyWriterCancel.click();
+});
 
 // 답글 요소들 조립
-replyButtonsDiv.appendChild(replyCancel);
-replyButtonsDiv.appendChild(replySubmit);
-replyDiv.appendChild(replyTextarea);
-replyDiv.appendChild(replyButtonsDiv);
+ReplyWriterButtons.appendChild(ReplyWriterCancel);
+ReplyWriterButtons.appendChild(ReplyWriterSubmit);
+ReplyWriterItem.appendChild(ReplyWriterTextarea);
+ReplyWriterItem.appendChild(ReplyWriterButtons);
 
 
-// 열거형 선언
-const ButtonType = {
-    CreateComment: 0,
-    CreateReply: 1,
-    UpdateComment: 2,
-    UpdateReply: 3,
-    DeleteComment: 4,
-    DeleteReply: 5
-};
-// 열거형 불변화
-Object.freeze(ButtonType);
+//----------------------------------------------------------------------------------------------------------------
+
+
+// 댓글 수정 영역 구분
+let ReplyModifierItem = document.createElement('div');
+ReplyModifierItem.setAttribute("class", "ReplyModifier")
+
+// text 요소 추가
+let ReplyModifierTextarea = document.createElement('textarea');
+ReplyModifierTextarea.setAttribute("class", "inputTextarea form-control");
+ReplyModifierTextarea.setAttribute("name", "content");
+
+// 답글 버튼 요소 구분
+let ReplyModifierButtons = document.createElement('div');
+ReplyModifierButtons.setAttribute("class", "postButtonsBottom");
+
+// 답글 취소 버튼
+let ReplyModifierCancel = document.createElement('a');
+ReplyModifierCancel.setAttribute("class", "btn btn-primary");
+ReplyModifierCancel.textContent = "취소";
+// 취소 버튼 이벤트
+ReplyModifierCancel.addEventListener('click', () => {
+    if (ReplyModifierItem.parentElement != null) {
+        ReplyModifierItem.nextElementSibling.removeAttribute("hidden");
+        ReplyModifierItem.parentElement.removeChild(ReplyModifierItem);
+        ReplyModifierTextarea.value = "";
+    }
+});
+// 수정 버튼 이벤트
+[...document.getElementsByClassName("CommentModifyButton")].forEach( (button) => {
+    button.addEventListener("click", (myself) => {
+        ReplyModifierCancel.click();
+
+        myself.target.parentElement.parentElement.insertBefore(ReplyModifierItem, myself.target.parentElement.parentElement.children[1]);
+        ReplyModifierTextarea.value = ReplyModifierItem.nextElementSibling.getElementsByClassName("CommentContent")[0].textContent;
+        myself.target.parentElement.parentElement.children[2].setAttribute("hidden", "hidden");
+    });
+});
+
+// 답글 제출 버튼
+let ReplyModifierSubmit = document.createElement('button');
+ReplyModifierSubmit.setAttribute("class", "btn btn-outline-primary");
+ReplyModifierSubmit.setAttribute("type", "button");
+ReplyModifierSubmit.textContent = "쓰기";
+// 답글 제출
+ReplyModifierSubmit.addEventListener("click", async () => {
+    setRequestData("/updateComment", {
+                        articleId: document.getElementById("articleId").getAttribute("value"),
+                        content: ReplyModifierTextarea.value,
+                        parentCommentId: ReplyModifierItem.parentElement.getAttribute("id"),
+                        commentId: ReplyModifierItem.parentElement.getAttribute("id")
+                    }
+    );
+    if (!checkContent(ReplyModifierTextarea)) return;
+
+    let responseData = await postData();
+    console.log(responseData);
+
+    [...ReplyModifierItem.nextElementSibling.children]
+        .filter( item => item.getAttribute("class") === "CommentContent" )[0]
+            .textContent = responseData.content;
+    ReplyModifierCancel.click();
+});
+
+// 답글 요소들 조립
+ReplyModifierButtons.appendChild(ReplyModifierCancel);
+ReplyModifierButtons.appendChild(ReplyModifierSubmit);
+ReplyModifierItem.appendChild(ReplyModifierTextarea);
+ReplyModifierItem.appendChild(ReplyModifierButtons);
+
+
+//----------------------------------------------------------------------------------------------------------------
+
+// 최상위 댓글 쓰기 버튼 이벤트
+document.getElementById("createCommentButton").addEventListener("click", async (myself) => {
+    setRequestData("/createComment", {
+                    articleId: document.getElementById("articleId").getAttribute("value"),
+                    content: myself.target.parentElement.previousElementSibling.value,
+                    parentCommentId: 0,
+                    commentId: 0
+        }
+    );
+    if (!checkContent(myself.target.parentElement.previousElementSibling)) return;
+
+    let responseData = await postData();
+    console.log(responseData);
+
+    createAddComment(responseData);
+});
+
 
 
 // 요청 데이터
 let requestData = {
-    requestButtonType: -1,
     requestURL: "",
     requestBody: {
     }
 }
 
-// 추가할 댓글,답글 생성 함수
-function createAddElement(responseData) {
-    // 추가될 댓글 요소 구분
-    let add_ul_Element = document.createElement("ul");
+function setRequestData(URL, BodyData) {
+    requestData.requestURL = URL,
+    requestData.requestBody = BodyData
+}
 
-    let add_li_Element = document.createElement("li");
-    add_li_Element.setAttribute("class", "");
-    add_li_Element.setAttribute("id", responseData.id);
+// 추가할 댓글,답글 생성 함수
+function createAddComment(responseData) {
+    // 추가될 댓글 요소 구분
+    let add_div_Element = document.createElement("div");
+    add_div_Element.setAttribute("class", "");
+    add_div_Element.setAttribute("id", responseData.id);
 
     let add_createdBy = document.createElement("p");
-    add_createdBy.textContent = responseData.createdBy;
+    add_createdBy.setAttribute("class", "commentCreatedBy");
+    add_createdBy.textContent = responseData.nickname;
 
-    let add_content = document.createElement("p");
-    add_content.setAttribute("class", "CommentReplyContent");
+    let add_contentItem = document.createElement("div");
+    add_contentItem.setAttribute("class", "CommentContentItem");
+
+    let add_content = document.createElement("span");
+    add_content.setAttribute("class", "CommentContent");
     add_content.textContent = responseData.content;
 
-    let add_createdAt = document.createElement("p");
+    let add_createdAt = document.createElement("span");
     add_createdAt.setAttribute("class", "CreatedAt");
     add_createdAt.textContent = responseData.createdAt;
 
     let add_replyButton = document.createElement("a");
     add_replyButton.setAttribute("href", "javascript:void(0)");
-    add_replyButton.setAttribute("class", "replyButton edit-button");
-    add_replyButton.setAttribute("value", "1");
+    add_replyButton.setAttribute("class", "CommentWriteButton");
     add_replyButton.textContent = "답글쓰기"
-    editButtonEventRegister(add_replyButton);
+    writeButtonEvent(add_replyButton);
 
-    add_li_Element.appendChild(add_createdBy);
-    add_li_Element.appendChild(add_content);
-    add_li_Element.appendChild(add_createdAt);
-    add_li_Element.appendChild(add_replyButton);
+    add_div_Element.appendChild(add_createdBy);
+    add_div_Element.appendChild(add_contentItem);
+    add_div_Element.appendChild(add_createdAt);
+    add_div_Element.appendChild(add_replyButton);
 
-    if (requestData.requestButtonType === ButtonType.CreateComment) {
-        add_li_Element.setAttribute("class", "CommentItem border-bottom");
-        add_createdBy.setAttribute("class", "commentCreatedBy");
-
-        add_ul_Element.appendChild(add_li_Element);
-        return add_ul_Element;
-
+    if (responseData.parentCommentId === 0) {
+        add_div_Element.setAttribute("class", "CommentItem border-bottom");
+        document.getElementsByClassName("blog-post-comments")[0].insertBefore(add_div_Element, null);
     } else {
-        add_li_Element.setAttribute("class", "ReplyItem border-bottom");
-
-        return add_li_Element;
+        add_div_Element.setAttribute("class", "ReplyItem border-bottom");
+        let add_ParentCommentNickname = document.createElement("span");
+        add_ParentCommentNickname.setAttribute("class", "ParentCommentNickname");
+        add_ParentCommentNickname.textContent =
+            "@" + document.getElementById(responseData.parentCommentId).firstElementChild.textContent;
+        add_contentItem.appendChild(add_ParentCommentNickname);
+        let stopSearchTarget = document.getElementById(responseData.rootCommentId);
+        while (stopSearchTarget.nextElementSibling != null) {
+            if ([...stopSearchTarget.nextElementSibling.classList].find( item => item === "CommentItem") == undefined) {
+                stopSearchTarget = stopSearchTarget.nextElementSibling;
+                continue;
+            }
+            break;
+        }
+        stopSearchTarget.parentElement.insertBefore(add_div_Element, stopSearchTarget.nextElementSibling);
     }
-}
 
-// 정상 응답 시 행동
-function doAfterResponse(responseData) {
-    let createdElement = null;
-    switch(requestData.requestButtonType) {
-        case ButtonType.CreateComment:
-            createdElement = createAddElement(responseData);
-            document.getElementsByClassName("blog-post-comments")[0].appendChild(createdElement);
-            document.getElementById("articleComment").value = "";
-            break;
-        case ButtonType.CreateReply:
-            createdElement = createAddElement(responseData);
-            replyDiv.parentNode.appendChild(createdElement);
-            closeTextarea();
-            break;
-        case ButtonType.UpdateComment:
-            replyDiv.nextElementSibling.textContent = responseData.content;
-            closeTextarea();
-            break;
-        case ButtonType.UpdateReply:
-            replyDiv.nextElementSibling.textContent = responseData.content;
-            closeTextarea();
-            break;
-    }
-}
-
-// 요청 데이터 설정
-function setRequestData(buttonMyself) {
-    switch(requestData.requestButtonType) {
-        case ButtonType.CreateComment:
-            requestData.requestURL = "/createCommentJSON";
-            requestData.requestBody = {
-                articleId: document.getElementsByName('articleId')[0].getAttribute("value"),
-                content: document.getElementById("articleComment").value
-            };
-            break;
-        case ButtonType.CreateReply:
-            requestData.requestURL = "/createReplyJSON";
-            requestData.requestBody = {
-                articleId: document.getElementsByName('articleId')[0].getAttribute("value"),
-                articleCommentId: replyDiv.parentNode.firstElementChild.getAttribute("id"),
-                content: replyTextarea.value
-            };
-            break;
-        case ButtonType.UpdateComment:
-            requestData.requestURL = "/" + replyDiv.parentNode.getAttribute("id") + "/updateCommentJSON";
-            requestData.requestBody = {
-                articleId: document.getElementsByName('articleId')[0].value,
-                content: replyTextarea.value
-            };
-            break;
-        case ButtonType.UpdateReply:
-            requestData.requestURL = "/" + replyDiv.parentNode.getAttribute("id") + "/updateReplyJSON";
-            requestData.requestBody = {
-                articleId: document.getElementsByName('articleId')[0].value,
-                articleCommentId: replyDiv.parentNode.parentNode.firstElementChild.getAttribute("id"),
-                content: replyTextarea.value
-            };
-            break;
-        case ButtonType.DeleteComment:
-            requestData.requestURL = "/deleteCommentJSON";
-//            requestData.requestBody = {
-//                            commentId: buttonMyself.parentNode.parentNode.getAttribute("id")
-//                        };
-// commentId 만 매핑할려고 했으나 객체형태로 보내면
-// JSONObject to Long 매핑 오류가 났다.
-// 하나 보낼거면 키값 형태가 아니라 값만 보내면 정상 매핑해준다.
-            requestData.requestBody = buttonMyself.parentNode.parentNode.getAttribute("id");
-            break;
-        case ButtonType.DeleteReply:
-            requestData.requestURL = "/deleteReplyJSON";
-            requestData.requestBody = buttonMyself.parentNode.parentNode.getAttribute("id");
-            break;
-    }
-    console.log(requestData);
+    add_contentItem.appendChild(add_content);
 }
 
 
-// 취소시 답글 요소 삭제
-replyCancel.addEventListener('click', (myself) => {
-    closeTextarea();
-});
-
-// 답글 입력 요소 삭제
-function closeTextarea() {
-
-    if (replyDiv.nextElementSibling != null) {
-        replyDiv.nextElementSibling.removeAttribute("hidden");
+async function checkContent(textarea) {
+    if (textarea.value.trim().length === 0) {
+        alert("올바르게 입력하세요.");
+        return false;
     }
-    if (replyDiv.parentElement != null) {
-        replyDiv.parentNode.removeChild(replyDiv);
-        replyTextarea.value = "";
-    }
+    return true;
 }
-
-
-// 수정, 댓글쓰기 버튼들 클릭 이벤트 등록
-function editButtonEventRegister(button) {
-    button.addEventListener('click', async (myself) => {
-
-        requestData.requestButtonType = Number(myself.target.getAttribute('value'));
-
-        switch(requestData.requestButtonType) {
-            case ButtonType.CreateComment:
-                break;
-            case ButtonType.CreateReply:
-                myself.target.parentNode.parentNode.insertBefore(replyDiv, myself.target.parentNode.nextElementSibling);
-                break;
-            case ButtonType.UpdateComment:
-                myself.target.parentNode.parentNode.insertBefore(
-                        replyDiv, myself.target.parentNode.parentNode.getElementsByClassName("CommentReplyContent")[0]);
-                replyTextarea.value = replyDiv.parentNode.getElementsByClassName("CommentReplyContent")[0].textContent;
-                replyDiv.nextElementSibling.setAttribute("hidden", "hidden");
-                break;
-            case ButtonType.UpdateReply:
-                myself.target.parentNode.parentNode.insertBefore(
-                        replyDiv, myself.target.parentNode.parentNode.getElementsByClassName("CommentReplyContent")[0]);
-                replyTextarea.value = replyDiv.parentNode.getElementsByClassName("CommentReplyContent")[0].textContent;
-                replyDiv.nextElementSibling.setAttribute("hidden", "hidden");
-                break;
-        };
-    });
-}
-
-[...document.getElementsByClassName('edit-button')].forEach( (editButton) => {
-    editButtonEventRegister(editButton);
-});
-
-
-// 제출 버튼들 클릭 이벤트 등록
-[document.getElementById("submitButton"), replySubmit].forEach( (button) => {
-    button.addEventListener('click', async (myself) => {
-
-       setRequestData(myself.target);
-       if (requestData.requestBody.content.trim().length === 0) {
-           alert("올바르게 입력하세요.");
-           return;
-       }
-       let responseData = await postData(requestData.requestURL, requestData.requestBody);
-       console.log(responseData);
-
-       doAfterResponse(responseData);
-   });
-});
 
 
 // 삭제 버튼들 클릭 이벤트 등록
 [...document.getElementsByClassName("deleteButton")].forEach( (button) => {
     button.addEventListener('click', async (myself) => {
 
-        setRequestData(myself.target);
-        if (!confirm("삭제하시겠습니까?")) {
-            return;
-        }
-        let responseData = await postData(requestData.requestURL, requestData.requestBody);
+        if (!confirm("삭제하시겠습니까?")) return;
+
+        // Long 하나 받을때는 {} 로 객체형식이면 안된다.
+        setRequestData("/deleteComment", myself.target.parentElement.parentElement.getAttribute("id"));
+
+        let responseData = await postData();
         console.log(responseData);
 
-        doAfterResponse(responseData);
     });
 });
 
@@ -260,14 +254,14 @@ let _csrf = document.getElementById("_csrf").content;
 let _csrf_header = document.getElementById("_csrf_header").content;
 
 // 데이터 제출
-async function postData(sendURL, bodyData) {
-    let promiseData = await fetch("/comments" + sendURL, {
+async function postData() {
+    let promiseData = await fetch("/comments" + requestData.requestURL, {
         method: "POST",
         headers: {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': _csrf
         },
-        body: JSON.stringify(bodyData),
+        body: JSON.stringify(requestData.requestBody),
     });
     return promiseData.json();
 //    .then( (response) => console.log(response.json()) );
