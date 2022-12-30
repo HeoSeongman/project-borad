@@ -6,8 +6,10 @@ import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -17,10 +19,12 @@ public record BoardPrincipal(
         Collection<? extends GrantedAuthority> authorities,
         String email,
         String nickname,
-        String introduce
-) implements UserDetails {
+        String introduce,
+        Map<String, Object> oAuth2Attributes
 
-    public static BoardPrincipal of(String username, String password, String email, String nickname, String introduce) {
+) implements UserDetails, OAuth2User {
+
+    public static BoardPrincipal of(String username, String password, String email, String nickname, String introduce, Map<String, Object> oAuth2Attributes) {
         Set<RoleType> roleTypes = Set.of(RoleType.USER);
 
         return new BoardPrincipal(
@@ -32,8 +36,13 @@ public record BoardPrincipal(
                         .collect(Collectors.toUnmodifiableSet()), // stream 으로 반환된 SimpleGrantedAuthority 요소들을 수정불가한 Set 으로 반환
                 email,
                 nickname,
-                introduce
+                introduce,
+                oAuth2Attributes
         );
+    }
+
+    public static BoardPrincipal of(String username, String password, String email, String nickname, String introduce) {
+        return of(username, password, email, nickname, introduce, Map.of());
     }
 
     public static BoardPrincipal from(UserAccountDto userAccountDto) {
@@ -54,6 +63,11 @@ public record BoardPrincipal(
                 email,
                 introduce
         );
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return oAuth2Attributes;
     }
 
     @Override
@@ -89,6 +103,11 @@ public record BoardPrincipal(
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public String getName() {
+        return username;
     }
 
     public enum RoleType {

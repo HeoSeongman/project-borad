@@ -8,7 +8,7 @@ import lombok.ToString;
 import javax.persistence.*;
 
 @Getter
-@ToString
+@ToString(callSuper = true)
 @Table
 @Entity
 public class UserAccount extends AuditingFields {

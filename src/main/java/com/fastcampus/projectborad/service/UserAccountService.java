@@ -6,7 +6,11 @@ import com.fastcampus.projectborad.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class UserAccountService {
@@ -15,21 +19,23 @@ public class UserAccountService {
 
     private final UserAccountRepository userAccountRepository;
 
-    public void createAccount(UserAccountDto userAccountDto) {
-        System.out.println("----------------------------------------Before UserAccount.of()----------------------------------------");
-
+    public UserAccountDto createAccount(UserAccountDto userAccountDto) {
         UserAccount account = UserAccount.of(
                 userAccountDto.userId(),
                 passwordEncoder.encode(userAccountDto.userPassword()),
                 userAccountDto.email(),
                 userAccountDto.nickname(),
-                userAccountDto.introduce()
+                userAccountDto.introduce(),
+                userAccountDto.userId()
         );
-
-        System.out.println("----------------------------------------After UserAccount.of()----------------------------------------");
-
-        userAccountRepository.save(account);
-
-        System.out.println("----------------------------------------After save(account)----------------------------------------");
+        UserAccount savedUserAccount = userAccountRepository.save(account);
+        return UserAccountDto.from(savedUserAccount);
     }
+
+    @Transactional(readOnly = true)
+    public Optional<UserAccountDto> searchUser(String username) {
+        return userAccountRepository.findById(username)
+                .map(UserAccountDto::from);
+    }
+
 }
